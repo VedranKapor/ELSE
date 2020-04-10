@@ -1,0 +1,55 @@
+{
+    "else-version": "1.0",
+    "else-casename": "DEMO CASE",
+    "else-desc": "OPIS",
+    "else-date": "04/10/2020",
+    "else-currency": "USD",
+    "else-unit": "GWh",
+    "else-dr": "12",
+    "else-units": [
+        {
+            "UnitId": "UT_00000",
+            "UT_00000": "TUZLA ",
+            "Unitname": "TUZLA ",
+            "Fuel": "Lignite",
+            "h": false,
+            "IC": 750,
+            "LT": 40,
+            "CT": 5
+        },
+        {
+            "UnitId": "UT_80eza",
+            "UT_80eza": "JABLANICA",
+            "Unitname": "JABLANICA",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 450,
+            "LT": 25,
+            "CT": 6
+        },
+        {
+            "UnitId": "UT_9rhyz",
+            "UT_9rhyz": "SALAKOVAC",
+            "Unitname": "SALAKOVAC",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 550,
+            "LT": 30,
+            "CT": 10
+        },
+        {
+            "UnitId": "UT_ju3ni",
+            "UT_ju3ni": "PODVELEZJE",
+            "Unitname": "PODVELEZJE",
+            "Fuel": "Wind",
+            "h": true,
+            "IC": 250,
+            "LT": 15,
+            "CT": 3
+        }
+    ],
+    "else-years": [
+        "2020",
+        "2025"
+    ]
+}

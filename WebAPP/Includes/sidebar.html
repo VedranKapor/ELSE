@@ -1,0 +1,50 @@
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#Navi > li').click(function(e) {
+    e.stopPropagation();
+        $('li').removeClass('active');
+        //$(selector).removeClass('open');
+        $(this).addClass('active');
+    });
+});	
+</script>
+
+<nav>
+    <ul id="Navi">
+        <li class="active">
+            <a href="#/" title="Home page"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">Home</span></a>
+        </li>
+        <li class="">
+            <a href="#/AddCase" title="Add case"><i class="fa fa-lg fa-fw fa-plus-circle"></i> <span class="menu-item-parent">Add case</span></a>
+        </li>
+        <!-- <li class="">
+            <a href="#/DataEntry" title="Data entry page"><i class="fa fa-lg fa-fw fa-database"></i> <span class="menu-item-parent">Data entry</span></a>
+        </li>
+        <li class="">
+            <a href="#/DataEntry2" title="Data entry page"><i class="fa fa-lg fa-fw fa-database"></i> <span class="menu-item-parent">Data entry 2</span></a>
+        </li> -->
+
+        <li class="">
+            <a href="#" title="Data entry"><i class="fa fa-lg fa-fw fa-database"></i> <span class="menu-item-parent">Data entry</span></a>
+            <ul>
+                <li class="">
+                    <a href="#/DataEntry" title="Data entry page"><span class="menu-item-parent">Data entry</span></a>
+                </li>
+                <li class="">
+                    <a href="#/DataEntry2" title="Data entry page"> <span class="menu-item-parent">Data entry 2</span></a>
+                </li>
+            </ul>	
+        </li>
+        <li class="">
+            <a href="#/TechData" title="Tech data page"><i class="fa fa-lg fa-fw fa-list-alt"></i> <span class="menu-item-parent">Tech data</span></a>
+        </li>
+        <li class="">
+            <a href="#/ConfigData" title="Tech data page"><i class="fa fa-lg fa-fw fa-table"></i> <span class="menu-item-parent">Config data</span></a>
+        </li>
+        <li class="">
+            <a href="#/SimData" title="Tech data page"><i class="fa fa-lg fa-fw fa-signal"></i> <span class="menu-item-parent">Tech data</span></a>
+        </li>
+    </ul>
+</nav>
+
+<span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>

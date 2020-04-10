@@ -1,0 +1,214 @@
+
+<div class="row">
+	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+		<h2 class="page-title txt-color-blueDark" id="else-title"><i class="fa-fw fa fa-home"></i> Case study <span>> create & edit</span></h2>
+	</div>
+	<div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+		<ul id="sparks" class="">
+			<li class="sparks-info">
+				<h5> Selected case study: <span class="txt-color-blue" id="else-case"></span></h5>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <section>
+            <div class="widget-body-toolbar-else">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button id="else-save" class="btn btn btn-success">
+                           Save case data <i class="fa  fa-save"></i>
+                        </button>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <!-- <button id="else-discart" class="btn btn btn-danger" style="display: none;">
+                            Discart changes <i class="fa fa-exclamation-triangle"></i>
+                         </button> -->
+                         <button id="else-new" class="btn btn btn-info" style="display: none;">
+                            Configure new case <i class="fa fa-plus"></i>
+                         </button>
+                    </div>
+                    <!-- <div class="col-sm-6 text-right">
+                        <div class="onoffswitch-container">
+                            <span class="onoffswitch-title">Auto Open Next</span> 
+                            <span class="onoffswitch">
+                                <input type="checkbox" class="onoffswitch-checkbox" id="autoopen">
+                                <label class="onoffswitch-label" for="autoopen"> 
+                                    <span class="onoffswitch-inner" data-swchon-text="ON" data-swchoff-text="OFF"></span> 
+                                    <span class="onoffswitch-switch"></span>
+                                </label> 
+                            </span> 
+                        </div>
+                        <div class="onoffswitch-container">
+                            <span class="onoffswitch-title">Open Inline</span> 
+                            <span class="onoffswitch">
+                                <input type="checkbox" class="onoffswitch-checkbox" id="inline">
+                                <label class="onoffswitch-label" for="inline"> 
+                                    <span class="onoffswitch-inner" data-swchon-text="ON" data-swchoff-text="OFF"></span> 
+                                    <span class="onoffswitch-switch"></span>
+                                </label> 
+                            </span>
+                        </div>	
+                    </div> -->
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<form id="else-caseForm">
+    <div class="row">
+        <div class="col-md-6">
+            <article >
+                <div class="jarviswidget" >            
+                    <div>
+                        <div class="widget-body no-padding">
+                            <div class="smart-form">
+                                <header>
+                                    <span class="widget-icon"> <i class="fa fa-edit"></i> </span>
+                                    General case data
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-6">
+                                            <label class="label">Case study name</label>
+                                            <label class="input">
+                                                <input type="text" placeholder="casename" name="else-casename" id="else-casename">
+                                            </label>
+                                            <div class="note">
+                                                <strong>!@#$%^&*()</strong> are not allowed in case name!
+                                            </div>
+                                            <label style="margin-top:7px">Select a date</label>
+                                            <div class="input-group">
+                                                <input type="text" name="else-date" id="else-date" placeholder="Select a date" class="form-control datepicker" data-dateformat="dd/mm/yy">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                        </section> 
+                                        <section class="col col-6">
+                                            <label class="label">Case study description</label>
+                                            <label class="textarea"> 										
+                                                <textarea rows="6" class="custom-scroll" name="else-desc" id="else-desc"></textarea> 
+                                            </label>
+                                            <div class="note">
+                                                <strong>Note:</strong> description is not required field.
+                                            </div>
+                                        </section> 
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article>
+                <div class="jarviswidget" >            
+                    <div>
+                        <div class="widget-body no-padding">
+                            <div class="smart-form">
+                                <header>
+                                    <span class="widget-icon"> <i class="fa fa-check-square-o"></i> </span>
+                                    Define simulation years
+                                    <div class="pull-right">
+                                        <small class="pointer btn" id="else-checkAll">
+                                            <span class="widget-icon"> <i class="fa fa-calendar-check-o"></i> </span>
+                                            Check all
+                                        </small>
+                                        <small class="pointer btn" id="else-uncheckAll">
+                                            <span class="widget-icon"> <i class="fa fa-calendar-check-o"></i> </span>
+                                            Uncheck all
+                                        </small>
+                                        <small class="pointer btn" id="else-x2">
+                                            <span class="widget-icon"> <i class="fa fa-calendar-check-o"></i> </span>
+                                           X2
+                                        </small>
+                                        <small class="pointer btn" id="else-x5">
+                                            <span class="widget-icon"> <i class="fa fa-calendar-check-o"></i> </span>
+                                            X5
+                                        </small>
+                                    </div>
+                                </header>
+                                <fieldset>
+                                    <section>        
+                                        <input id="range-slider-1" type="text" name="else-range" value="">
+                                    </section>
+                                    <section>
+                                        <label class="label">Inline checkboxes</label>
+                                        <div class="inline-group" id="else-years"></div>
+                                        <div class="col-md-12">
+                                            <div id="yearsselectmsg"></div>
+                                        </div>
+                                    </section>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div> 
+        <div class="col-md-6">
+            <!--metrics-->
+            <article>
+                <div class="jarviswidget" >            
+                    <div>
+                        <div class="widget-body no-padding">
+                            <div class="smart-form">
+                                <header>
+                                    <span class="widget-icon"> <i class="fa fa-tachometer"></i> </span>
+                                    Define metrics
+                                </header>
+                                <fieldset>
+                                    <div class="row">
+                                        <section class="col col-4">
+                                            <label class="label">Currency</label>
+                                            <label class="select">
+                                                <select id="else-currency" name="else-currency"></select>
+                                                <i></i> </label>
+                                        </section>    
+                                        <section class="col col-4">
+                                            <label class="label">Unit</label>
+                                            <label class="select">
+                                                <select id="else-unit" name="else-unit"></select> 
+                                                <i></i> </label>
+                                        </section> 
+                                        <section class="col col-4">
+                                            <label class="label">Discount rate [%]</label>
+                                            <label class="input">
+                                                <input type="text" placeholder="Dicount rate" name="else-dr" id="else-dr">
+                                            </label>
+                                        </section>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article>
+                <div class="jarviswidget" >            
+                    <div>
+                        <div class="widget-body no-padding">
+                            <div class="smart-form">
+                                <header>
+                                    <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                                    Define plant units
+                                    <div class="pull-right">
+                                        <small class="pointer btn" id="else-addUnit">
+                                            <span class="widget-icon"> <i class="fa fa-plus"></i> </span>
+                                            Add unit
+                                        </small>
+                                    </div>
+                                </header>
+                                <fieldset>
+                                    <section>
+                                        <div id="else-grid"></div>
+                                    </section>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>    
+</form>
+    
