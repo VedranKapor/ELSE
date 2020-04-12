@@ -40,7 +40,7 @@ export default class TechData {
     static initPage(model){
         Message.clearMessages();
         Html.title(model.casename);
-        //console.log("model ", model)
+        console.log("model ", model)
         var sourceJson = {
             datatype: "json",
             localdata: model.tData,
@@ -48,9 +48,7 @@ export default class TechData {
         };
         var dataAdapterJson = new $.jqx.dataAdapter(sourceJson);
         let $gridJson = $('#else-techGrid');
-        Html.renderSparkline(model.fuels, model.perByFuel, model.capByFuel, model.totCapByFuel);
         Grid.techGrid($gridJson, dataAdapterJson, model.genData['else-currency']);
-        pageSetUp();
     }
 
     static refreshPage(casename){
@@ -89,6 +87,7 @@ export default class TechData {
         $('a[data-toggle=tab').on('shown.bs.tab', function (e) {
                 var tab = $(this).attr('href'); 
                 if(tab == '#s2'){
+                    console.log('s2')
                     pageSetUp();
                     // var chart = $('#else-chart-csv').jqxChart('getInstance');
                     // chart.update();  
@@ -103,7 +102,7 @@ export default class TechData {
             event.preventDefault();
             event.stopImmediatePropagation();
             let tData = $('#else-techGrid').jqxGrid('getrows');
-            let daTData = JSON.stringify(tData,['Year', 'UnitId', 'IC','CF', 'EF', 'FUC', 'INC', 'OCF', 'OCV', 'CO2', 'SO2', 'NOX', 'Other']);
+            let daTData = JSON.stringify(tData,['Year', 'UnitId', 'Unitname', 'Fuel', 'h', 'IC','CF', 'EF', 'FUC', 'INC', 'OCF', 'OCV', 'CO2', 'SO2', 'NOX', 'Other']);
             //potrebno dodati za koji godinu vrsimo update
             Else.updatetData(JSON.parse(daTData))
             .then(response =>{

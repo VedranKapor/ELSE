@@ -47,9 +47,9 @@ crossroads.addRoute('/TechData', function() {
 crossroads.addRoute('/ConfigData', function() {
     $('#content').html('<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>');
     import('../App/Controller/ConfigData.js')
-    .then(TechData => {
+    .then(ConfigData => {
         $(".else-content").load('App/View/ConfigData.html');
-        TechData.default.onLoad();
+        ConfigData.default.onLoad();
     });
 });
 

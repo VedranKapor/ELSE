@@ -3,10 +3,8 @@ import { Message } from "./Message.Class.js";
 
 export class Html {
 
-    static renderCases(cs, selectedCS){
-        $('#cases').empty();
-        let cases = cs.cases;
-       
+    static renderCases(cases, selectedCS){
+        $('#cases').empty();       
         $.each(cases, function (index, value) {
             Html.apendCase(value, selectedCS)
         });
@@ -76,9 +74,8 @@ export class Html {
         $('#cases').append(htmlstring);
     }
 
-    static renderCasePicker(cs, selectedCS){
+    static renderCasePicker(cases, selectedCS){
         $('#casePicker').empty();
-        let cases = cs.cases;
         $.each(cases, function (index, value) {
             Html.appendCasePicker(value, selectedCS);
         });
@@ -163,4 +160,51 @@ export class Html {
         }
     }
 
+    static renderSparkline(fuels, perByFuel, capByFuel, totCapByFuel ){
+    
+        // console.log(fuels);
+        // console.log(totCapByFuel)
+        // console.log(capByFuel)
+        // console.log(perByFuel)
+        var container =  $('.show-stat-microcharts');
+        container.empty();
+        $.each(fuels, function (key, fuel) {
+            let arrString = capByFuel[fuel].toString();
+            let spark = `
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                        <ul id="sparks" class="">
+                            <li class="sparks-info">
+                                <h5> ${fuel} <span class="${fuel}">${totCapByFuel[fuel]} MW</span></h5>
+                                <div class="sparkline ${fuel} hidden-mobile hidden-md hidden-sm">
+                                    ${arrString}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>  
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <div class="easy-pie-chart ${fuel}" data-percent="${perByFuel[fuel]}" data-pie-size="50">
+                            <span class="percent percent-sign">${perByFuel[fuel]}</span>
+                        </div> 
+                    </div> 
+
+                </div>  
+            `;
+            container.append(spark);
+        });
+    }
 }
+
+// <div class="sparkline txt-color-blue hidden-sm hidden-md pull-right" data-sparkline-type="line" data-sparkline-height="33px" data-sparkline-width="70px" data-fill-color="transparent">
+//     ${arrString}
+// </div>
+
+//nasvo za pie chart
+//  <span class="easy-pie-title">${fuel} <i class="fa fa-caret-down icon-color-good"></i></span>
+
+//pieChart
+/* <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+<div class="easy-pie-chart txt-color-greenLight" data-percent="${perByFuel[fuel]}" data-pie-size="50">
+    <span class="percent percent-sign">${perByFuel[fuel]}</span>
+</div>
+</div> */

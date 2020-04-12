@@ -132,4 +132,22 @@ export class Message {
             iconSmall : "fa fa-thumbs-up bounce animated"
         });
     }
+
+    static SmartMessageBoxDDL(cases, init_f){
+        var casesArr = '"[' + cases.join('][') + ']"';
+        console.log(casesArr)
+        $.SmartMessageBox({
+            title : "No active case studt: Select",
+            content : "Please select on of existing cases to proceed.",
+            buttons : "[Continue]",
+            input : "select",
+            //options : "[Costa Rica][United States][Autralia][Spain]"
+            options: casesArr,
+            //options : "[Costa Rica][United States][Autralia][Spain]"
+        }, function(ButtonPress, Value) {
+            console.log(Value);
+            init_f(Value);
+            //alert(ButtonPress + " " + Value);
+        });
+    }
 }

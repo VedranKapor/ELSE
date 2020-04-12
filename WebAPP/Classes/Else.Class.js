@@ -26,6 +26,27 @@ export class Else {
         });
     }
 
+    static updatecData(data, year) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url:Base.apiUrl() + "updatecData",
+                async: true,  
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ "data": data }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {             
+                    resolve(result);
+                },
+                error: function(xhr, status, error) {
+                    if(error == 'UNKNOWN'){ error =  xhr.responseJSON.message }
+                    reject(error);
+                }
+            });
+        });
+    }
+
     static updatehData(data, year) {
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -55,6 +76,27 @@ export class Else {
                 type: 'POST',
                 dataType: 'json',
                 data: JSON.stringify({ "data": data }),
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {             
+                    resolve(result);
+                },
+                error: function(xhr, status, error) {
+                    if(error == 'UNKNOWN'){ error =  xhr.responseJSON.message }
+                    reject(error);
+                }
+            });
+        });
+    }
+
+    static getcData(casename) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url:Base.apiUrl() + "getcData",
+                async: true,  
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ "casename": casename }),
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
                 success: function (result) {             

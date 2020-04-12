@@ -1,14 +1,14 @@
 import { Message } from "../../Classes/Message.Class.js";
 import { Base } from "../../Classes/Base.Class.js";
 import { Html } from "../../Classes/Html.Class.js";
-import { Model } from "../Model/TechData.Model.js";
+import { Model } from "../Model/ConfigData.Model.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
-import { MessageSelect } from "../Controller/MessageSelect.js";
+import { MessageSelect } from "./MessageSelect.js";
 import { SmartAdmin } from "../../Classes/SmartAdmin.Class.js";
 
-export default class TechData {
+export default class ConfigData {
     static onLoad(){
         Base.getSession()
         .then(response =>{
@@ -17,19 +17,19 @@ export default class TechData {
             promise.push(casename);
             const genData = Else.genData(casename);
             promise.push(genData); 
-            const tData = Else.gettData(casename);
-            promise.push(tData); 
+            const cData = Else.getcData(casename);
+            promise.push(cData); 
             return Promise.all(promise);
         })
         .then(data => {
-            let [casename, genData, tData] = data;
-            let model = new Model(casename, genData, tData);
+            let [casename, genData, cData] = data;
+            let model = new Model(casename, genData, cData);
             if(casename){
                 this.initPage(model);
                 this.initEvents(model);
                 ;
             }else{
-                MessageSelect.init(TechData.refreshPage.bind(TechData));
+                MessageSelect.init(ConfigData.refreshPage.bind(ConfigData));
             }
         })
         .catch(error =>{ 
@@ -38,19 +38,22 @@ export default class TechData {
     }
 
     static initPage(model){
+        console.log("model ", model)
         Message.clearMessages();
         Html.title(model.casename);
         //console.log("model ", model)
         var sourceJson = {
             datatype: "json",
-            localdata: model.tData,
+            localdata: model.cData,
             datafields: model.datafields,
         };
-        var dataAdapterJson = new $.jqx.dataAdapter(sourceJson);
-        let $gridJson = $('#else-techGrid');
-        Html.renderSparkline(model.fuels, model.perByFuel, model.capByFuel, model.totCapByFuel);
-        Grid.techGrid($gridJson, dataAdapterJson, model.genData['else-currency']);
-        pageSetUp();
+        var dataAdapterJson = new $.jqx.dataAdapter(sourceJson, { autoBind: true });
+        let $configGrid = $('#else-configGrid');
+        let $configChart = $('#else-configChart');
+        //Html.renderSparkline(model.fuels, model.perByFuel, model.capByFuel, model.totCapByFuel);
+        Grid.configGrid($configGrid, dataAdapterJson, model.columns);
+        Chart.configChart($chartJson, dataAdapterJson, model.series);
+        //pageSetUp();
     }
 
     static refreshPage(casename){
@@ -60,13 +63,13 @@ export default class TechData {
             promise.push(casename);
             const genData = Else.genData(casename);
             promise.push(genData); 
-            const tData = Else.gettData(casename);
-            promise.push(tData); 
+            const cData = Else.getcData(casename);
+            promise.push(cData); 
             return Promise.all(promise);
         })
         .then(data => {
-            let [casename, genData, tData] = data;
-            let model = new Model(casename, genData, tData);
+            let [casename, genData, cData] = data;
+            let model = new Model(casename, genData, cData);
             this.initPage(model);
             this.initEvents(model);
         })
@@ -82,32 +85,19 @@ export default class TechData {
             e.stopImmediatePropagation();
             var casename = $(this).attr('data-ps');
             Html.updateCasePicker(casename);
-            TechData.refreshPage(casename);
+            ConfigData.refreshPage(casename);
             Message.smallBoxConfirmation("Confirmation!", "Case " + casename + " selected!", 3500);
         });
 
-        $('a[data-toggle=tab').on('shown.bs.tab', function (e) {
-                var tab = $(this).attr('href'); 
-                if(tab == '#s2'){
-                    pageSetUp();
-                    // var chart = $('#else-chart-csv').jqxChart('getInstance');
-                    // chart.update();  
-                }  
-                // if(tab == '#s4'){
-                //     var chart = $('#else-chart-json').jqxChart('getInstance');
-                //     chart.update();  
-                // }  
-        });
-
-        $("#else-savetData").on('click', function (event) {
+        $("#else-savecData").on('click', function (event) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            let tData = $('#else-techGrid').jqxGrid('getrows');
-            let daTData = JSON.stringify(tData,['Year', 'UnitId', 'IC','CF', 'EF', 'FUC', 'INC', 'OCF', 'OCV', 'CO2', 'SO2', 'NOX', 'Other']);
+            let cData = $('#else-configGrid').jqxGrid('getrows');
+            let daCData = JSON.stringify(cData,[ 'UnitId'].concat(model.years));
             //potrebno dodati za koji godinu vrsimo update
-            Else.updatetData(JSON.parse(daTData))
+            Else.updatecData(JSON.parse(daCData))
             .then(response =>{
-                model.tData = JSON.parse(daTData);
+                model.cData = JSON.parse(daCData);
                 Message.bigBoxSuccess('Case study message', response.message, 3000);
             })
             .catch(error=>{

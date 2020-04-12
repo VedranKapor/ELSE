@@ -71,11 +71,7 @@ export class Grid {
         }
 
         var validation_2 = function(cell, value){
-            console.log(value)
             if(value < 0 ){
-                console.log(value)
-                //Message.smallBoxWarning("Input message", "Capacity of unit must be greater then zero!", 3000);
-                //return false;
                 return { result: false, message: "Vlaue should be positive" };
             }else{
                 return true;
@@ -95,7 +91,6 @@ export class Grid {
         }
 
         var createeditor = function (row, cellvalue, editor) {
-            console.log(cellvalue)
             editor.jqxNumberInput({ decimalDigits: 0 });
         }
 
@@ -170,12 +165,23 @@ export class Grid {
         });
     }
 
-    static techGrid($div, dataAdapter){
+    static techGrid($div, dataAdapter, currency){
  
         var columnsrenderer = function (value) {
          return '<div style="text-align: center; margin-top: 12px; word-wrap:normal; white-space:normal;">' + value + '</div>';
          }
  
+         var cellsrendererWarning = function (row, columnfield, value, defaulthtml, columnproperties) {
+            if ( value==0) {
+                value = $.jqx.dataFormat.formatnumber(value, 'd2');
+                return '<span style="margin: 4px;  float: ' + columnproperties.cellsalign + ';"><i class="fa fa-exclamation-triangle warning" aria-hidden="true"></i>' + value + '</span>';
+           }
+           if ( value<0) {
+                value = $.jqx.dataFormat.formatnumber(value, 'd2');
+                return '<span style="margin: 4px;  float: ' + columnproperties.cellsalign + ';"><i class="fa fa-exclamation-triangle danger" aria-hidden="true"></i>' + value + '</span>';
+            }
+        }
+
         let height = $( window ).height() -245 ;
         $div.jqxGrid({
              autoheight: true,
@@ -184,7 +190,7 @@ export class Grid {
              showfilterrow: false,
              filterable: true,
              sortable: true,
-             columnsheight: 70,
+             columnsheight: 50,
              columnsresize:true,     
              //columnsautoresize:true,
              altrows: true,
@@ -198,31 +204,54 @@ export class Grid {
              selectionmode: 'multiplecellsadvanced',
 
              columns: [
-                { text: 'Year',                                              datafield: 'Year',                      align: 'center',  cellalign: 'left',   pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
-                { text: 'Unitname',                                          datafield: 'Unitname',                  align: 'center',  cellalign: 'left',   pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
-                { text: 'Fuel',                                              datafield: 'Fuel',                      align: 'center',  cellalign: 'left',   pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
-                { text: 'IC',                                                datafield: 'IC',                        align: 'center',  cellalign: 'left',   pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
-
-                { text: 'Capacity factor <br>[%]',                           datafield: 'CF',                        align: 'center',  cellsalign: 'right', columngroup: 'TD',maxwidth: 155 ,minwidth: 100  , cellsformat: 'd2' , renderer: columnsrenderer      },
-                { text: 'Lifetime <br>[years]',                              datafield: 'LT',                        align: 'center',  cellsalign: 'right', columngroup: 'TD',maxwidth: 155 ,minwidth: 100  , renderer: columnsrenderer   },
-                { text: 'Construction time <br>[years]',                     datafield: 'CT',                        align: 'center',  cellsalign: 'right', columngroup: 'TD',maxwidth: 155 ,minwidth: 100  , renderer: columnsrenderer   }
-                // { text: 'CO2 <br>removal factor [%]',                        datafield: 'CO2',                       align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155,minwidth: 100 , renderer: columnsrenderer   },
-                // { text: 'NOX <br>[g/kWh]',                                   datafield: 'NOX',                       align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155 ,minwidth: 100   , renderer: columnsrenderer  },
-                // { text: 'SO2 <br>[g/kWh]',                                   datafield: 'SO2',                       align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155  ,minwidth: 100 , renderer: columnsrenderer   },
-                // { text: 'PM <br>[g/kWh]',                                    datafield: 'PM',                        align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155,minwidth: 100  , renderer: columnsrenderer     },
-                // { text: 'Fuel cost <br>['+currency+'/GJ]',                   datafield: 'Fuel_cost',                 align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155  ,minwidth: 100 , renderer: columnsrenderer },
-                // { text: 'Investment cost <br>['+currency+'/kW]',             datafield: 'Investment_cost',           align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155,minwidth: 100  , renderer: columnsrenderer },
-                // { text: 'Operating cost fixed <br>['+currency+'/kW/yr]',     datafield: 'Operating_cost_fixed',      align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155,minwidth: 100  , renderer: columnsrenderer },
-                // { text: 'Operating cost variable <br>['+currency+'/MWh]',    datafield: 'Operating_cost_variable',   align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155 ,minwidth: 100 , renderer: columnsrenderer},
+                { text: 'Year',                                              datafield: 'Year',       align: 'center',  cellsalign: 'left',                        pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
+                { text: 'Unitname',                                          datafield: 'Unitname',   align: 'center',  cellsalign: 'left',                        pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
+                { text: 'Fuel',                                              datafield: 'Fuel',       align: 'center',  cellsalign: 'left',                        pinned: true, editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
+                { text: 'Installed capacity<br>[MW]',                        datafield: 'IC',         align: 'center',  cellsalign: 'right',   columngroup: 'TD',   editable: false,  maxwidth: 155, minwidth: 100, renderer: columnsrenderer },
+                { text: 'Capacity factor <br>[%]',                           datafield: 'CF',         align: 'center',  cellsalign: 'right', columngroup: 'TD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Efficiency <br>[%]',                                datafield: 'EF',         align: 'center',  cellsalign: 'right', columngroup: 'TD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'CO<sub>2</sub> <br>removal factor [%]',                        datafield: 'CO2',        align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'NO<sub>X</sub> <br>[g/kWh]',                                   datafield: 'NOX',        align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'SO<sub>2</sub> <br>[g/kWh]',                                   datafield: 'SO2',        align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Other <br>[g/kWh]',                                    datafield: 'Other',      align: 'center',  cellsalign: 'right', columngroup: 'EF',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Fuel cost <br>['+currency+'/GJ]',                   datafield: 'FUC',        align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Investment cost <br>['+currency+'/kW]',             datafield: 'INC',        align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Operating cost <sub>fixed</sub> <br>['+currency+'/kW/yr]',     datafield: 'OCF',        align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
+                { text: 'Operating cost <sub>variable</sub> <br>['+currency+'/MWh]',    datafield: 'OCV',        align: 'center',  cellsalign: 'right', columngroup: 'CD',maxwidth: 155, minwidth: 100, cellsformat: 'd2', renderer: columnsrenderer, cellsrenderer:cellsrendererWarning },
             ],
             columngroups: 
             [
               { text: 'Technical Details', align: 'center', name: 'TD' },
-            //   { text: 'Emisions factors',  align: 'center', name: 'EF' },
-            //   { text: 'Cost data', align: 'center', name: 'CD' }
+              { text: 'Emisions factors',  align: 'center', name: 'EF' },
+              { text: 'Cost data', align: 'center', name: 'CD' }
             ]
         });
 
+    }
+
+    static configGrid($div, dataAdapter, columns){
+        var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties) {
+            return '<span style="margin: 4px;">' + value + ' h</span>';
+        }
+        $div.jqxGrid({
+            width: '100%',
+            autoheight: true,
+            //rowsheight: 25,
+            source: dataAdapter,
+            columnsautoresize: true,
+            columnsresize:true,
+            groupable: true,
+            theme: this.theme(),
+            // pageable: true,
+            // pagerheight: 26,
+            editable: true,
+            altrows: true,
+            pagesize: 20,
+            selectionmode: 'multiplecellsadvanced',
+            enablehover: true,
+            editmode: 'selectedcell',
+            columns:columns
+        });
     }
 
 }

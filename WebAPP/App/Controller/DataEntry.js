@@ -5,6 +5,7 @@ import { Model } from "../Model/DataEntry.Model.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
+import { MessageSelect } from "../Controller/MessageSelect.js";
 
 export default class DataEntry {
     static onLoad(){
@@ -23,12 +24,12 @@ export default class DataEntry {
             let [casename, genData, hData] = data;
             let model = new Model(casename, genData, hData);
             
-            this.initEvents(model)
             if(casename){
                 this.initPage(model);
+                this.initEvents(model);
                 ;
             }else{
-                Message.info("Please select case to proceed!");
+                MessageSelect.init(DataEntry.refreshPage.bind(DataEntry));
             }
         })
         .catch(error =>{ 
@@ -91,11 +92,11 @@ export default class DataEntry {
 
         $('a[data-toggle=tab').on('shown.bs.tab', function (e) {
                 var tab = $(this).attr('href'); 
-                if(tab == '#s2'){
-                    var chart = $('#else-chart-csv').jqxChart('getInstance');
-                    chart.update();  
+                if(tab == '#s1'){
+                    $("#else-save-div").show();
                 }  
-                if(tab == '#s4'){
+                if(tab == '#s2'){
+                    $("#else-save-div").hide();
                     var chart = $('#else-chart-json').jqxChart('getInstance');
                     chart.update();  
                 }  

@@ -1,0 +1,185 @@
+{
+    "else-version": "1.0",
+    "else-casename": "DEMO CASE CONFIG",
+    "else-desc": "",
+    "else-date": "04/12/2020",
+    "else-currency": "USD",
+    "else-unit": "GWh",
+    "else-dr": "8",
+    "else-units": [
+        {
+            "UnitId": "UT_00000",
+            "UT_00000": "RC1",
+            "Unitname": "RC1",
+            "Fuel": "Brown Coal",
+            "h": true,
+            "IC": 110,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_dzmx0",
+            "UT_dzmx0": "RC3",
+            "Unitname": "RC3",
+            "Fuel": "Nuclear",
+            "h": true,
+            "IC": 450,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_h08tc",
+            "UT_h08tc": "UT_h08tc",
+            "Unitname": "UT_h08tc",
+            "Fuel": "Nuclear",
+            "h": false,
+            "IC": 350,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_x8j5x",
+            "UT_x8j5x": "UT_x8j5x",
+            "Unitname": "UT_x8j5x",
+            "Fuel": "Nuclear",
+            "h": false,
+            "IC": 110,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_b3uji",
+            "UT_b3uji": "UT_b3uji",
+            "Unitname": "UT_b3uji",
+            "Fuel": "Nuclear",
+            "h": false,
+            "IC": 175,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_lviuz",
+            "UT_lviuz": "UT_lviuz",
+            "Unitname": "UT_lviuz",
+            "Fuel": "Lignite",
+            "h": false,
+            "IC": 250,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_ovadk",
+            "UT_ovadk": "UT_ovadk",
+            "Unitname": "UT_ovadk",
+            "Fuel": "Lignite",
+            "h": false,
+            "IC": 175,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_8j41v",
+            "UT_8j41v": "UT_8j41v",
+            "Unitname": "UT_8j41v",
+            "Fuel": "Lignite",
+            "h": false,
+            "IC": 350,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_o3ipt",
+            "UT_o3ipt": "UT_o3ipt",
+            "Unitname": "UT_o3ipt",
+            "Fuel": "Lignite",
+            "h": false,
+            "IC": 280,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_w50pe",
+            "UT_w50pe": "UT_w50pe",
+            "Unitname": "UT_w50pe",
+            "Fuel": "Brown Coal",
+            "h": false,
+            "IC": 250,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_mcyxp",
+            "UT_mcyxp": "UT_mcyxp",
+            "Unitname": "UT_mcyxp",
+            "Fuel": "Brown Coal",
+            "h": false,
+            "IC": 180,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_1qurt",
+            "UT_1qurt": "UT_1qurt",
+            "Unitname": "UT_1qurt",
+            "Fuel": "Wind",
+            "h": true,
+            "IC": 75,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_zjj74",
+            "UT_zjj74": "UT_zjj74",
+            "Unitname": "UT_zjj74",
+            "Fuel": "Wind",
+            "h": true,
+            "IC": 120,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_a6oau",
+            "UT_a6oau": "UT_a6oau",
+            "Unitname": "UT_a6oau",
+            "Fuel": "Wind",
+            "h": true,
+            "IC": 150,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_t7b8b",
+            "UT_t7b8b": "UT_t7b8b",
+            "Unitname": "UT_t7b8b",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 250,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_bl0fq",
+            "UT_bl0fq": "UT_bl0fq",
+            "Unitname": "UT_bl0fq",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 350,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_day2c",
+            "UT_day2c": "UT_day2c",
+            "Unitname": "UT_day2c",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 300,
+            "LT": 0,
+            "CT": 0
+        }
+    ],
+    "else-years": [
+        "2020",
+        "2030"
+    ]
+}

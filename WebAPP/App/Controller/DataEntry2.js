@@ -5,6 +5,7 @@ import { Model } from "../Model/DataEntry.Model2.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
+import { MessageSelect } from "../Controller/MessageSelect.js";
 
 export default class DataEntry {
     static onLoad(){
@@ -23,12 +24,11 @@ export default class DataEntry {
             let [casename, genData, hData] = data;
             let model = new Model(casename, genData, hData);
             
-            this.initEvents(model)
             if(casename){
                 this.initPage(model);
-                ;
+                this.initEvents(model);
             }else{
-                Message.info("Please select case to proceed!");
+                MessageSelect.init(DataEntry.refreshPage.bind(DataEntry));
             }
         })
         .catch(error =>{ 
@@ -127,6 +127,8 @@ export default class DataEntry {
                 Else.updatehData(JSON.parse(daHData), year)
                 .then(response =>{
                     model.hData[year] = JSON.parse(daHData);
+                    var chart = $('#else-chart-json').jqxChart('getInstance');
+                    chart.update();  
                     Message.bigBoxSuccess('Case study message', response.message, 3000);
                 })
                 .catch(error=>{

@@ -95,6 +95,28 @@
     color: whitesmoke;
 }
 
+.Hydro{
+    color: #5bc0de!important;
+}
+.Oil{
+    color: #d9534f!important;
+}
+.Solar{
+    color: #5cb85c!important;
+}
+.Wind{
+    color: #5cb85c!important;
+}
+.Nuclear{
+    color: #f0ad4e!important;
+}
+.Hydro{
+    color: #5bc0de!important;
+}
+.Lignite{
+    color: #777!important;
+}
+
 /* .bigBox {
     right: 5px;
     top: 50px;

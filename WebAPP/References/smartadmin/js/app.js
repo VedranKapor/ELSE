@@ -1875,6 +1875,8 @@ var calc_navbar_height = function() {
  * to check for form elements, tooltip activation, popovers, etc...
  */
 	function pageSetUp() {
+
+		//console.log("pageSetup")
 	
 		if (thisDevice === "desktop"){
 			// is desktop

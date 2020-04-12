@@ -3,6 +3,7 @@ import { Base } from "../../Classes/Base.Class.js";
 import { Html } from "../../Classes/Html.Class.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
+import { SmartAdmin } from "../../Classes/SmartAdmin.Class.js";
 import { Model } from "../Model/AddCase.Model.js";
 import { Navbar } from "./Navbar.js";
 
@@ -38,49 +39,9 @@ export default class AddCase {
         Html.title(model.casename);
         Html.genData(model);
         Grid.basicGrid(model.units);
-        loadScript("../References/smartadmin/js/plugin/ion-slider/ion.rangeSlider.min.js", sliderInit.bind(null, model.years));
+        loadScript("../References/smartadmin/js/plugin/ion-slider/ion.rangeSlider.min.js", SmartAdmin.rangeSlider.bind(null, model.years));
         this.initEvents();
 
-        function sliderInit(years){
-            var d5_instance = $("#range-slider-1").data("ionRangeSlider");
-            let from = "2020";
-            let to = "2050";
-            if(years){
-                from = Math.min(...years);
-                to = Math.max(...years);
-            }else{
-                years=[];
-                for(var i = from; i <= to; i++) { years.push(String(i)); }
-            }
-            if(d5_instance){
-                d5_instance.update({
-                    from: from,
-                    to: to,
-                });
-                Html.years(from, to, years);
-            }else{
-                $("#range-slider-1").ionRangeSlider({
-                    skin: "modern",
-                    min: "2000",
-                    max: "2070",
-                    from: from,
-                    to: to,
-                    type: 'double',
-                    step: 1,
-                    postfix: " Year;",
-                    prettify: false,
-                    grid: true,
-                    inputValuesSeparator: '',
-                    onStart: function (data) {
-                        Html.years(from, to, years);
-                    },
-                    onFinish: function (data) {
-                        Html.years(data.from, data.to, years);
-                        $("#else-caseForm").jqxValidator('validateInput', '#else-years');
-                    }
-                });
-            }
-        }
     }
 
     static refreshPage(casename){

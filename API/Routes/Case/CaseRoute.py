@@ -12,8 +12,8 @@ case_api = Blueprint('CaseRoute', __name__)
 @case_api.route("/getCases", methods=['GET'])
 def getCases():
     try:
-        cs = [ f.name for f in os.scandir(Config.DATA_STORAGE) if f.is_dir() ]
-        return jsonify({'cases': cs}), 200
+        cases = [ f.name for f in os.scandir(Config.DATA_STORAGE) if f.is_dir() ]
+        return jsonify(cases), 200
     except(IOError):
         return jsonify('No existing cases!'), 404
 
@@ -85,6 +85,20 @@ def deleteCase():
     except OSError:
         raise OSError
 
+@case_api.route("/getcData", methods=['POST'])
+def getcData():
+    try:
+        casename = request.json['casename']
+        if casename != None:
+            genDataPath = Path(Config.DATA_STORAGE,casename,"cData.json")
+            hData = File.readFile(genDataPath)
+            response = hData    
+        else:  
+            response = None     
+        return jsonify(response), 200
+    except(IOError):
+        return jsonify('No existing cases!'), 404
+
 @case_api.route("/gethData", methods=['POST'])
 def gethData():
     try:
@@ -155,9 +169,27 @@ def updatetData():
         case = session.get('elsecase', None)
         tDataPath = Path(Config.DATA_STORAGE, case, "tData.json")
         if case != None:
-            tData = File.readFile(tDataPath)
+            #tData = File.readFile(tDataPath)
             tData = data
             File.writeFile( tData, tDataPath)
+            response = {
+                "message": "You have update hourly data",
+                "status_code": "success"
+            }      
+        return jsonify(response), 200
+    except(IOError):
+        return jsonify('No existing cases!'), 404
+
+@case_api.route("/updatecData", methods=['POST'])
+def updatecData():
+    try:
+        data = request.json['data']
+        case = session.get('elsecase', None)
+        cDataPath = Path(Config.DATA_STORAGE, case, "cData.json")
+        if case != None:
+            #cData = File.readFile(cDataPath)
+            cData = data
+            File.writeFile( cData, cDataPath)
             response = {
                 "message": "You have update hourly data",
                 "status_code": "success"
@@ -186,6 +218,23 @@ def defaultHData(genData, hDataPath):
     except(IOError):
         raise IOError
 
+def defaultCData(genData, cDataPath):
+    try:
+        years = genData['else-years']
+        units = genData['else-units']
+        
+        cData = []
+        for unit in units:
+            chunk = {}
+            chunk['UnitId'] = unit['UnitId']
+            for year in years:
+                chunk[year] = True 
+            cData.append(chunk)
+
+        File.writeFile( cData, cDataPath)
+    except(IOError):
+        raise IOError
+
 def defaultTData(genData, tDataPath):
     try:
         years = genData['else-years']
@@ -196,11 +245,12 @@ def defaultTData(genData, tDataPath):
                 chunk = {}
                 chunk['Year'] = year
                 chunk['UnitId'] = unit['UnitId']
-                chunk['Unitname'] = unit['Unitname']
-                chunk['Fuel'] = unit['Fuel']
-                chunk['IC'] = unit['IC']
+                # chunk['Unitname'] = unit['Unitname']
+                # chunk['Fuel'] = unit['Fuel']
+                # chunk['IC'] = unit['IC']
                 chunk['CF'] = 0
                 chunk['EF'] = 0
+                chunk['FUC'] = 0
                 chunk['INC'] = 0
                 chunk['OCF'] = 0
                 chunk['OCV'] = 0
@@ -259,6 +309,85 @@ def updateHData(genData, hDataPath):
 
     File.writeFile( hData, hDataPath)
 
+def updateTData(genData, tDataPath):
+
+    tData = File.readFile(tDataPath)
+
+    #definisi godine yearsExi = godine koje postoje u tData existing years
+    #yearsNew godine koje smo izabrali u editu case, nove godine yearsNew
+    #yearsAdd godine koje trebamo dodati u tData i to je yearsExi-yearsNew sve one godine koje ne postoje u tData a dodali smo ihtj sada postoje u yearNew
+    yearsExi = [ yr['Year'] for yr in tData]
+    yearsNew = genData['else-years']
+
+    yearsAdd = set(yearsNew) - set(yearsExi)
+    yearsRemove = set(yearsExi) - set(yearsNew)
+
+    #dio za unite, ista logika kao za godine
+    unitsExi = [ unit['UnitId'] for unit in tData]
+    unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
+
+    unitsAdd = set(unitsNew) - set(unitsExi)
+    unitsRemove = set(unitsExi) - set(unitsNew)
+
+    #iz posojeceg tData izbaciti sve one elemente koji su u unitRemove ili yearsRemove
+    tData = [ unit for unit in tData if unit['UnitId'] not in unitsRemove and unit['Year'] not in yearsRemove]
+
+    #napraviti dict da biunijeti imena i kapacitete prilikom kreiranje chunk
+    #ne mozemo direktno citati dict jer je ulisti prilikom kreiranje chunk-a
+    # unitData = {}
+    # for obj in genData['else-units']:
+    #     unitData[obj['UnitId']] = {}
+        # unitData[obj['UnitId']]['Unitname'] = obj['Unitname']
+        # unitData[obj['UnitId']]['Fuel'] = obj['Fuel']
+        # unitData[obj['UnitId']]['IC'] = obj['IC']
+
+    #za sve izabrane godine dodaj samo nove jedinice
+    for yr in yearsNew:
+        for ut in unitsAdd:
+            chunk = {}
+            chunk['Year'] = yr
+            chunk['UnitId'] = ut 
+            # chunk['Unitname'] = unitData[ut]['Unitname']
+            # chunk['Fuel'] = unitData[ut]['Fuel']
+            # chunk['IC'] = unitData[ut]['IC']
+            chunk['CF'] = 0
+            chunk['EF'] = 0
+            chunk['FUC'] = 0
+            chunk['INC'] = 0
+            chunk['OCF'] = 0
+            chunk['OCV'] = 0
+            chunk['CO2'] = 0
+            chunk['SO2'] = 0
+            chunk['NOX'] = 0
+            chunk['Other'] = 0
+            tData.append(chunk)
+
+
+    #updatUnits je sve postojece jednice minus one koje se remove, ovdje nisu ukljucene nove jednic jer smo njih dodali u prethodnom loop
+    #za sve dodane godine u studiji dodaj samo postojece jednice bez onih koje se remove
+    unitsExiUpdate = set(unitsExi) - set(unitsRemove)
+    for yr in yearsAdd:
+        for ut in unitsExiUpdate:
+            chunk = {}
+            chunk['Year'] = yr
+            chunk['UnitId'] = ut 
+            # chunk['Unitname'] = unitData[ut]['Unitname']
+            # chunk['Fuel'] = unitData[ut]['Fuel']
+            # chunk['IC'] = unitData[ut]['IC']
+            chunk['CF'] = 0
+            chunk['EF'] = 0
+            chunk['FUC'] = 0
+            chunk['INC'] = 0
+            chunk['OCF'] = 0
+            chunk['OCV'] = 0
+            chunk['CO2'] = 0
+            chunk['SO2'] = 0
+            chunk['NOX'] = 0
+            chunk['Other'] = 0
+            tData.append(chunk)
+
+    File.writeFile( tData, tDataPath)
+
 @case_api.route("/saveCase", methods=['POST'])
 def saveCase():
     try:
@@ -270,11 +399,13 @@ def saveCase():
             genDataPath = Path(Config.DATA_STORAGE, case, "genData.json")
             hDataPath = Path(Config.DATA_STORAGE, case, "hData.json")
             tDataPath = Path(Config.DATA_STORAGE, case, "tData.json")
+            cDataPath = Path(Config.DATA_STORAGE, case, "cData.json")
             #edit case sa istim imenom
             if case == casename:
                 File.writeFile( genData, genDataPath)
-                defaultTData(genData, tDataPath)
+                updateTData(genData, tDataPath)
                 updateHData(genData, hDataPath)
+                defaultCData(genData, cDataPath)
                 response = {
                     "message": "You have change case general data!",
                     "status_code": "edited"
@@ -283,8 +414,9 @@ def saveCase():
             else:
                 if not os.path.exists(Path(Config.DATA_STORAGE,casename)):
                     File.writeFile( genData, genDataPath)
-                    defaultTData(genData, tDataPath)
+                    updateTData(genData, tDataPath)
                     updateHData(genData, hDataPath)
+                    defaultCData(genData, cDataPath)
                     os.rename(Path(Config.DATA_STORAGE,case), Path(Config.DATA_STORAGE,casename ))
                     session['elsecase'] = casename
                     response = {
@@ -304,9 +436,11 @@ def saveCase():
                 genDataPath = Path(Config.DATA_STORAGE, casename, "genData.json")
                 hDataPath = Path(Config.DATA_STORAGE, casename, "hData.json")
                 tDataPath = Path(Config.DATA_STORAGE, casename, "tData.json")
+                cDataPath = Path(Config.DATA_STORAGE, casename, "cData.json")
                 File.writeFile( genData, genDataPath)
                 defaultHData(genData, hDataPath)
                 defaultTData(genData, tDataPath)
+                defaultCData(genData, cDataPath)
                 response = {
                     "message": "You have created new case!",
                     "status_code": "created"
@@ -320,11 +454,6 @@ def saveCase():
         return jsonify(response), 200
     except(IOError):
         return jsonify('Error saving case IOError!'), 404
-
-
-
-
-
 
     ######################3citsti DICT
         # hData = {}
