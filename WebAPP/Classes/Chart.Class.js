@@ -107,29 +107,6 @@ export class Chart {
     }
 
     static initChart($div, dataAdapter, series, simType='true') {
-        // prepare the data
-    //     var source =
-    //    {
-    //        datatype: "csv",
-    //        datafields: [
-    //             { name: 'Hour' },
-    //             { name: 'Solar' },
-    //             { name: 'Wind' },
-    //             { name: 'Hydro' },
-    //             { name: 'Demand' }
-    //        ],
-    //        url: '../DataStorage/DEMO CASE BIH/hData2.csv'
-    //    };
-
-    //     var dataAdapter = new $.jqx.dataAdapter(source, { 
-    //         async: false, 
-    //         autoBind: true, 
-    //         loadError: function (xhr, status, error) { alert('Error loading "' + source.url + '" : ' + error); } 
-    //     });
-       // var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-      // console.log(dataAdapter.records)
-        // prepare jqxChart settings
         var settings = {
             title: "",
             description: "",
@@ -140,6 +117,7 @@ export class Chart {
             padding: { left: 10, top: 5, right: 10, bottom: 5 },
             titlePadding: { left: 90, top: 0, right: 0, bottom: 10 },
             source: dataAdapter,
+            borderLineColor: 'transparent',
             xAxis:
             {
                 dataField: 'Hour',
@@ -206,40 +184,48 @@ export class Chart {
             title: "",
             description: "",
             enableAnimations: true,
-            showLegend: true,
+            showLegend: false,
             padding: { left: 10, top: 5, right: 10, bottom: 5 },
             titlePadding: { left: 10, top: 0, right: 0, bottom: 10 },
             source: dataAdapter,
+            enableCrosshairs: true,
+            crosshairsDashStyle: '2,2',
+            crosshairsLineWidth: 1.0,
+            crosshairsColor: '#888888',
+            borderLineColor: 'transparent',
             xAxis:
             {
                 dataField: 'Year',
                 type: 'basic',
                 valuesOnTicks: true,
-                labels:
-                {
-                    formatFunction: function (value) {
-                        return value.getDate();
-                    }
-                }
+                labels: 'Years',
+                // {
+                //     formatFunction: function (value) {
+                //         return value.getDate();
+                //     }
+                // }
             },
             valueAxis:
             {
                 // unitInterval: 500,
-                // minValue: 0,
-                // maxValue: 4500,
-                title: {text: 'Installed power [MW]'}
+                minValue: 0,
+                maxValue: 'auto',
+                title: {text: 'Installed power [MW]'},
+                displayValueAxis: true,
+                description:  '/MWh',
+                axisSize: 'auto',
             },
-            colorScheme: 'scheme03',
+            colorScheme: 'scheme09',
             seriesGroups:
                 [
                     {
-                        type: 'stackedarea',
-                        series: 
-                        [
-                                { dataField: 'SearchNonPaid', displayText: 'Desktop Search' },
-                                { dataField: 'SearchPaid', displayText: 'Mobile Search' },
-                                { dataField: 'Referral', displayText: 'Social media' }
-                            ]
+                        type: 'stackedsteparea',
+                        series: series
+                        // [
+                        //     { dataField: 'SearchNonPaid', displayText: 'Desktop Search' },
+                        //     { dataField: 'SearchPaid', displayText: 'Mobile Search' },
+                        //     { dataField: 'Referral', displayText: 'Social media' }
+                        // ]
                     }
                 ]
         };

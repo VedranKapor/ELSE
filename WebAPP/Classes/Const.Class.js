@@ -33,10 +33,12 @@ export const FUELS1 = [
                             {id:"Hydro",name:"Hydro", group: "Fuel group - Coal"}];
 
 export const CHART_TYPE = {
-    barChart: "column",
-    lineChart: 'spline',
+    column: "column",
+    spline: 'spline',
+    stackedarea: 'stackedarea',
+    stackedcolumn: 'stackedcolumn',
     areaChart: 'stackedarea',
-    stackedChart: 'stackedcolumn'
+    stackedsteparea: 'stackedsteparea'
 }
 
 export const SIMTYPE = {

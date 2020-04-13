@@ -388,6 +388,55 @@ def updateTData(genData, tDataPath):
 
     File.writeFile( tData, tDataPath)
 
+
+def updateCData(genData, cDataPath):
+
+    cData = File.readFile(cDataPath)
+    #definisi godine yearsExi = godine koje postoje u cData existing years
+    #yearsNew godine koje smo izabrali u editu case, nove godine yearsNew
+    #yearsAdd godine koje trebamo dodati u cData i to je yearsExi-yearsNew sve one godine koje ne postoje u cData a dodali smo ihtj sada postoje u yearNew
+    # yearsExi = [ {k for k in chunk if k != 'UnitId'}   for chunk in cData]
+    yearsExi = set()
+    for yr in cData[0]:
+        if yr != 'UnitId':
+            yearsExi.add(yr)
+
+    yearsNew = genData['else-years']
+
+    yearsAdd = set(yearsNew) - yearsExi
+    yearsRemove = yearsExi - set(yearsNew)
+
+    #dio za unite, ista logika kao za godine
+    unitsExi = [ unit['UnitId'] for unit in cData]
+    unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
+
+    unitsAdd = set(unitsNew) - set(unitsExi)
+    unitsRemove = set(unitsExi) - set(unitsNew)
+
+    #iz posojeceg cData izbaciti sve one elemente koji su u unitRemove ili yearsRemove
+    cData = [ unit for unit in cData if unit['UnitId'] not in unitsRemove ]
+
+    #dopuniti postojecke chunkove sa novim godinama za postojece Unite
+    for d in cData:
+        for k,v in list(d.items()):
+            if k!= 'UnitId':
+                if k in yearsRemove:
+                    del d[k]
+                for ya in yearsAdd:
+                    d[ya] = True
+
+    #add new chunk of Unit configuration with all years True
+    for unit in unitsAdd:
+        chunk = {}
+        chunk['UnitId'] = unit
+        for year in yearsNew:
+            chunk[year] = True
+        cData.append(chunk)
+
+
+    File.writeFile( cData, cDataPath)
+
+
 @case_api.route("/saveCase", methods=['POST'])
 def saveCase():
     try:
@@ -405,7 +454,7 @@ def saveCase():
                 File.writeFile( genData, genDataPath)
                 updateTData(genData, tDataPath)
                 updateHData(genData, hDataPath)
-                defaultCData(genData, cDataPath)
+                updateCData(genData, cDataPath)
                 response = {
                     "message": "You have change case general data!",
                     "status_code": "edited"
@@ -416,7 +465,7 @@ def saveCase():
                     File.writeFile( genData, genDataPath)
                     updateTData(genData, tDataPath)
                     updateHData(genData, hDataPath)
-                    defaultCData(genData, cDataPath)
+                    updateCData(genData, cDataPath)
                     os.rename(Path(Config.DATA_STORAGE,case), Path(Config.DATA_STORAGE,casename ))
                     session['elsecase'] = casename
                     response = {

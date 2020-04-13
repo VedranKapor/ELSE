@@ -1,0 +1,26 @@
+[
+    {
+        "2020": false,
+        "2030": true,
+        "UnitId": "UT_00000",
+        "2040": true
+    },
+    {
+        "2020": true,
+        "2030": false,
+        "UnitId": "UT_hek2s",
+        "2040": true
+    },
+    {
+        "2020": true,
+        "2030": true,
+        "UnitId": "UT_k1b11",
+        "2040": true
+    },
+    {
+        "UnitId": "UT_3dsud",
+        "2020": true,
+        "2030": true,
+        "2040": true
+    }
+]

@@ -1,0 +1,56 @@
+{
+    "else-version": "1.0",
+    "else-casename": "NEW DEMO 1",
+    "else-desc": "",
+    "else-date": "04/13/2020",
+    "else-currency": "EUR",
+    "else-unit": "GWh",
+    "else-dr": "12",
+    "else-units": [
+        {
+            "UnitId": "UT_00000",
+            "UT_00000": "RC1 old",
+            "Unitname": "RC1 old",
+            "Fuel": "Wind",
+            "h": true,
+            "IC": 100,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_hek2s",
+            "UT_hek2s": "RC2",
+            "Unitname": "RC2",
+            "Fuel": "Hydro",
+            "h": true,
+            "IC": 200,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_k1b11",
+            "UT_k1b11": "RC4",
+            "Unitname": "RC4",
+            "Fuel": "Solar",
+            "h": true,
+            "IC": 400,
+            "LT": 0,
+            "CT": 0
+        },
+        {
+            "UnitId": "UT_3dsud",
+            "UT_3dsud": "RC5",
+            "Unitname": "RC5",
+            "Fuel": "Lignite",
+            "h": true,
+            "IC": 500,
+            "LT": 0,
+            "CT": 0
+        }
+    ],
+    "else-years": [
+        "2020",
+        "2030",
+        "2040"
+    ]
+}

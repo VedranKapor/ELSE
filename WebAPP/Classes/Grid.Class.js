@@ -161,7 +161,18 @@ export class Grid {
             selectionmode: 'multiplecellsadvanced',
             enablehover: false,
             editmode: 'selectedcell',
-            columns:columns
+            columns:columns,
+            // handlekeyboardnavigation: function (event) {
+            //     var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+            //     if (key == 86) {
+            //         console.log('paste'),
+            //         console.log('e ', event);
+            //         return true;
+            //     } else if (key == 27) {
+            //         alert('Pressed Esc Key.');
+            //         return true;
+            //     }
+            // },
         });
     }
 

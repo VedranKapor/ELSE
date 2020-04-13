@@ -26,12 +26,12 @@ crossroads.addRoute('/DataEntry', function() {
     });
 });
 
-crossroads.addRoute('/DataEntry2', function() {
+crossroads.addRoute('/HourlyData', function() {
     $('#content').html('<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>');
-    import('../App/Controller/DataEntry2.js')
-    .then(DataEntry => {
-        $(".else-content").load('App/View/DataEntry2.html');
-        DataEntry.default.onLoad();
+    import('../App/Controller/HourlyData.js')
+    .then(HourlyData => {
+        $(".else-content").load('App/View/HourlyData.html');
+        HourlyData.default.onLoad();
     });
 });
 

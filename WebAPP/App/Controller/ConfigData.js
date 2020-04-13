@@ -38,21 +38,27 @@ export default class ConfigData {
     }
 
     static initPage(model){
-        console.log("model ", model)
         Message.clearMessages();
+        //Navbar.initPage(model.casename);
         Html.title(model.casename);
-        //console.log("model ", model)
-        var sourceJson = {
+        console.log('chartData prije init', model.chartData)
+        var srcGrid = {
             datatype: "json",
             localdata: model.cData,
             datafields: model.datafields,
         };
-        var dataAdapterJson = new $.jqx.dataAdapter(sourceJson, { autoBind: true });
-        let $configGrid = $('#else-configGrid');
-        let $configChart = $('#else-configChart');
+        var srcChart = {
+            datatype: "json",
+            localdata: model.chartData,
+            datafields: model.datafieldsChart,
+        };
+        var daGrid = new $.jqx.dataAdapter(srcGrid);
+        var daChart = new $.jqx.dataAdapter(srcChart, { autoBind: true });
+        let $divGrid = $('#else-configGrid');
+        let $divChart = $('#else-configChart');
         //Html.renderSparkline(model.fuels, model.perByFuel, model.capByFuel, model.totCapByFuel);
-        Grid.configGrid($configGrid, dataAdapterJson, model.columns);
-        Chart.configChart($chartJson, dataAdapterJson, model.series);
+        Grid.configGrid($divGrid, daGrid, model.columns);
+        Chart.configChart($divChart, daChart, model.series);
         //pageSetUp();
     }
 
@@ -103,6 +109,38 @@ export default class ConfigData {
             .catch(error=>{
                 Message.bigBoxDanger('Error message', error, null);
             })
+        });
+
+        $("#else-configGrid").on('cellvaluechanged', function (event) {
+            Pace.restart();
+            var args = event.args;
+            var year = event.args.datafield;
+            var rowBoundIndex = args.rowindex;
+            var value = args.newvalue;
+            var unitId = $('#else-configGrid').jqxGrid('getcellvalue', rowBoundIndex, 'UnitId');
+            $.each(model.chartData, function (id, obj) {
+                if(obj.Year == year){
+                    if(value){
+                        obj[unitId] = model.unitData[unitId]['IC'];
+                    }else{
+                        obj[unitId] = 0;
+                    }
+                    
+                }
+            });
+            var configChart = $('#else-configChart').jqxChart('getInstance');
+            configChart.source.records = model.chartData;
+            configChart.update();
+        });
+
+        $(".switchChart").on('click', function (e) {
+            e.preventDefault();
+            var configChart = $('#else-configChart').jqxChart('getInstance');
+            var chartType = $(this).attr('data-chartType');
+            configChart.seriesGroups[0].type = chartType;
+            configChart.update();  
+            $('.widget-toolbar a').switchClass( "green", "grey" );
+            $('#'+chartType).switchClass( "grey", "green" );
         });
     }
 }

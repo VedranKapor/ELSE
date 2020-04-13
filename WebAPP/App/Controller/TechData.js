@@ -3,10 +3,8 @@ import { Base } from "../../Classes/Base.Class.js";
 import { Html } from "../../Classes/Html.Class.js";
 import { Model } from "../Model/TechData.Model.js";
 import { Grid } from "../../Classes/Grid.Class.js";
-import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
 import { MessageSelect } from "../Controller/MessageSelect.js";
-import { SmartAdmin } from "../../Classes/SmartAdmin.Class.js";
 
 export default class TechData {
     static onLoad(){
@@ -40,7 +38,6 @@ export default class TechData {
     static initPage(model){
         Message.clearMessages();
         Html.title(model.casename);
-        //console.log("model ", model)
         var sourceJson = {
             datatype: "json",
             localdata: model.tData,
@@ -84,19 +81,6 @@ export default class TechData {
             Html.updateCasePicker(casename);
             TechData.refreshPage(casename);
             Message.smallBoxConfirmation("Confirmation!", "Case " + casename + " selected!", 3500);
-        });
-
-        $('a[data-toggle=tab').on('shown.bs.tab', function (e) {
-                var tab = $(this).attr('href'); 
-                if(tab == '#s2'){
-                    pageSetUp();
-                    // var chart = $('#else-chart-csv').jqxChart('getInstance');
-                    // chart.update();  
-                }  
-                // if(tab == '#s4'){
-                //     var chart = $('#else-chart-json').jqxChart('getInstance');
-                //     chart.update();  
-                // }  
         });
 
         $("#else-savetData").on('click', function (event) {

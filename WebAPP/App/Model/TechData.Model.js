@@ -29,8 +29,7 @@ export class Model {
                 totCapByFuel[obj.Fuel] =  totCapByFuel[obj.Fuel] + obj.IC;
 
             });
-
-            console.log('tData ',tData);
+            
             $.each(genData['else-units'], function (id, obj) {
                 capByFuel[obj.Fuel].push(obj.IC);
             });

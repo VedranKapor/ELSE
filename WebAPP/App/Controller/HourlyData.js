@@ -1,13 +1,13 @@
 import { Message } from "../../Classes/Message.Class.js";
 import { Base } from "../../Classes/Base.Class.js";
 import { Html } from "../../Classes/Html.Class.js";
-import { Model } from "../Model/DataEntry.Model2.js";
+import { Model } from "../Model/HourlyData.Model.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
-import { MessageSelect } from "../Controller/MessageSelect.js";
+import { MessageSelect } from "./MessageSelect.js";
 
-export default class DataEntry {
+export default class HourlyData {
     static onLoad(){
         Base.getSession()
         .then(response =>{
@@ -28,7 +28,7 @@ export default class DataEntry {
                 this.initPage(model);
                 this.initEvents(model);
             }else{
-                MessageSelect.init(DataEntry.refreshPage.bind(DataEntry));
+                MessageSelect.init(HourlyData.refreshPage.bind(HourlyData));
             }
         })
         .catch(error =>{ 
@@ -85,37 +85,55 @@ export default class DataEntry {
             e.stopImmediatePropagation();
             var casename = $(this).attr('data-ps');
             Html.updateCasePicker(casename);
-            DataEntry.refreshPage(casename);
+            HourlyData.refreshPage(casename);
             Message.smallBoxConfirmation("Confirmation!", "Case " + casename + " selected!", 3500);
-        });
-
-        $('a[data-toggle=tab').on('shown.bs.tab', function (e) {
-                var tab = $(this).attr('href'); 
-                if(tab == '#s2'){
-                    var chart = $('#else-chart-csv').jqxChart('getInstance');
-                    chart.update();  
-                }  
-                if(tab == '#s4'){
-                    var chart = $('#else-chart-json').jqxChart('getInstance');
-                    chart.update();  
-                }  
         });
 
         $('select').off('change')
         $('select').on('change', function() {
+            Pace.restart();
             var sourceJson = {
                 datatype: "json",
                 localdata: model.hData[this.value],
                 datafields: model.datafields,
             };
-    
             var dataAdapterJson = new $.jqx.dataAdapter(sourceJson, { autoBind: true });
-    
             let $gridJson = $('#else-grid-json');
-            let $chartJson = $('#else-chart-json');
+            //let $chartJson = $('#else-chart-json');
             Grid.hourlyGrid($gridJson, dataAdapterJson, model.columns);
-            Chart.initChart($chartJson,dataAdapterJson, model.series);
+            //$gridJson.jqxGrid('refreshdata');
+            //$gridJson.jqxGrid('updatebounddata', 'cells');
+            //Chart.initChart($chartJson,dataAdapterJson, model.series);
+            var chart = $('#else-chart-json').jqxChart('getInstance');
+            chart.source.records = model.hData[this.value];
+            chart.update();  
           });
+
+        //callback za cellvaluechanged, poziva se manuelno iz copy/paste eventa sa zakasnjenjem od 1.5 sec da se ne poziva za svaki cellvalue changed prilikom paste
+        let cellvaluechanged = function (event) {
+            let hData = $('#else-grid-json').jqxGrid('getrows');
+            let daHData = JSON.stringify(hData,['Hour', 'Demand'].concat(model.units));
+            let year = $( "#hData-years" ).val();
+            model.hData[year] = JSON.parse(daHData);
+            var chart = $('#else-chart-json').jqxChart('getInstance');
+            chart.source.records = model.hData[year] ;
+            chart.update();  
+        }
+
+        $("#else-grid-json").on('cellvaluechanged', cellvaluechanged);
+
+        $("#else-grid-json").bind('keydown', function (event) {
+            var ctrlDown = false, ctrlKey = 17, cmdKey = 91, vKey = 86, cKey = 67;
+            var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+            if (key == vKey) {
+                Pace.restart();
+                $("#else-grid-json").off('cellvaluechanged');
+                setTimeout(function(){ 
+                    cellvaluechanged();
+                    $("#else-grid-json").on('cellvaluechanged', cellvaluechanged);
+                 }, 1500);
+            }
+        });
 
         $("#else-savehData").on('click', function (event) {
                 event.preventDefault();
@@ -123,12 +141,11 @@ export default class DataEntry {
                 let hData = $('#else-grid-json').jqxGrid('getrows');
                 let daHData = JSON.stringify(hData,['Hour', 'Demand'].concat(model.units));
                 let year = $( "#hData-years" ).val();
-                //potrebno dodati za koji godinu vrsimo update
                 Else.updatehData(JSON.parse(daHData), year)
                 .then(response =>{
-                    model.hData[year] = JSON.parse(daHData);
-                    var chart = $('#else-chart-json').jqxChart('getInstance');
-                    chart.update();  
+                    // model.hData[year] = JSON.parse(daHData);
+                    // var chart = $('#else-chart-json').jqxChart('getInstance');
+                    // chart.update();  
                     Message.bigBoxSuccess('Case study message', response.message, 3000);
                 })
                 .catch(error=>{

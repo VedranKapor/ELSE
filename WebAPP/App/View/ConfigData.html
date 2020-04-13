@@ -18,10 +18,20 @@
             <div class="widget-body-toolbar-else">
 				<fieldset>
 					<div class="row">
-						<div class="col-sm-6">
+						<div class="col-md-6">
 							<button id="else-savecData" class="btn btn btn-success">
-							   Save case data <i class="fa  fa-save"></i>
+							   Save config data <i class="fa  fa-save"></i>
 							</button>
+						</div>
+						<div class="col-md-6 ">
+							<small class="pull-right">
+								<div class="pointer btn switchChart" id="stackedcolumn" data-chartType="stackedcolumn" id-chart="6"  data-toggle="tooltip" data-placement="top" title="Stacked Column Chart">
+                                    <i class="ace-icon fa fa-bar-chart fa-2x else"></i>
+								</div>
+								<div class="pointer btn switchChart" id="stackedsteparea" data-chartType="stackedsteparea" id-chart="6"  data-toggle="tooltip" data-placement="top" title="Stacked Area Chart">
+                                    <i class="ace-icon fa fa-area-chart fa-2x else"></i>
+								</div>
+							</small>
 						</div>
 					</div>
 				</fieldset>
@@ -30,14 +40,16 @@
     </div>
 </div>
 
-<div class="jarviswidget" >            
-	<div class="widget-body">
-		<fieldset>
-			<section>
-				<div id="else-configChart" style="width: 100%; height: 300px;"></div>
-			</section>
-		</fieldset>
-	</div>
+<div class="jarviswidget" >   
+	<div>
+		<div class="widget-body no-padding-bottom">
+			<fieldset>
+				<section>
+					<div id="else-configChart" style="width: 100%; height: 230px;"></div>
+				</section>
+			</fieldset>
+		</div>
+	</div>         
 </div>
 <div class="jarviswidget" >            
 	<div>
