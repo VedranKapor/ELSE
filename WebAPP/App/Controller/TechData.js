@@ -25,7 +25,6 @@ export default class TechData {
             if(casename){
                 this.initPage(model);
                 this.initEvents(model);
-                ;
             }else{
                 MessageSelect.init(TechData.refreshPage.bind(TechData));
             }

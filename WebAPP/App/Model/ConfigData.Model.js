@@ -27,11 +27,14 @@ export class Model {
 
             $.each(units, function (id, obj) {
                 datafieldsChart.push({ name: obj.UnitId, type:'number' });
-                series.push( { dataField: obj.UnitId, displayText:  obj.Unitname, showLabels: false, formatFunction: function (value) { return value.toFixed(2) + ' MW'; },
+                series.push( { dataField: obj.UnitId, displayText:  obj.Unitname, showLabels: false, formatFunction: 
+                    function (value) { 
+                        if (value != 0) 
+                        return value.toFixed(2) + ' MW'; },
                     labels: {
                         visible: true,
                         verticalAlignment: 'middle',
-                        offset: { x: 50, y: 50 }
+                        offset: { x: 15, y: 0 }
                     },
                 });
                 unitData = {}

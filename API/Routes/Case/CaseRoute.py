@@ -211,7 +211,7 @@ def defaultHData(genData, hDataPath):
                 chunk['Demand'] = 1 
                 for unit in units:
                     if unit['h']:
-                        chunk[unit['UnitId']] = 0 
+                        chunk[unit['UnitId']] = 1
                 hData[year].append(chunk)
 
         File.writeFile( hData, hDataPath)
@@ -270,15 +270,16 @@ def updateHData(genData, hDataPath):
     yearsNew = genData['else-years']
     yearsAdd = set(yearsNew) - set(yearsExi)
     yearsRemove = set(yearsExi) - set(yearsNew)
-    unitsExi = set()
 
+    unitsExi = set()
     for h, obj in list(hData.items()):
         for d in obj:
-            for k,v in d.items():
+            for k in d:
                 if k!= 'Hour' and k!='Demand':
                     unitsExi.add(k)
 
 
+    #unitsNew = [ unit['UnitId'] for unit in genData['else-units'] if unit['h']]
     unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
 
     yearChunk =[]
@@ -287,7 +288,7 @@ def updateHData(genData, hDataPath):
         chunk['Hour'] = i 
         chunk['Demand'] = 1 
         for unit in unitsNew:
-            chunk[unit] = 0 
+            chunk[unit] = 1
         yearChunk.append(chunk)
 
     unitsAdd = set(unitsNew) - unitsExi
@@ -297,17 +298,64 @@ def updateHData(genData, hDataPath):
         if h in yearsRemove:
             del hData[h] 
         for d in obj:
-            for k,v in list(d.items()):
+            for k in list(d):
                 if k!= 'Hour' and k!='Demand':
                     if k in unitsRemove:
                         del d[k]
                     for ut in unitsAdd:
-                        d[ut] = 0
+                        d[ut] = 1
 
     for yr in yearsAdd: 
         hData[yr] = yearChunk 
 
     File.writeFile( hData, hDataPath)
+
+def defaultTData_DF(genData, tDataPath):
+    try:
+       
+        years = genData['else-years']
+        units = [unit['UnitId'] for unit in genData['else-units'] ]
+
+        tData = {}
+        tData['CF'] = {}
+        tData['EF'] = {}
+        tData['FUC'] = {}
+        tData['INC'] = {}
+        tData['OCF'] = {}
+        tData['OCV'] = {}
+        tData['CO2'] = {}
+        tData['SO2'] = {}
+        tData['NOX'] = {}
+        tData['Other'] = {}
+
+        for year in years:
+            tData['CF'][year] = {}
+            tData['EF'][year] = {}
+            tData['FUC'][year] = {}
+            tData['INC'][year] = {}
+            tData['OCF'][year] = {}
+            tData['OCV'][year] = {}
+            tData['CO2'][year] = {}
+            tData['SO2'][year] = {}
+            tData['NOX'][year] = {}
+            tData['Other'][year] = {}
+            for unit in units:
+                tData['CF'][year][unit] = 0
+                tData['EF'][year][unit] = 0
+                tData['FUC'][year][unit] = 0
+                tData['INC'][year][unit] = 0
+                tData['OCF'][year][unit] = 0
+                tData['OCV'][year][unit] = 0
+                tData['CO2'][year][unit] = 0
+                tData['SO2'][year][unit] = 0
+                tData['NOX'][year][unit] = 0
+                tData['Other'][year][unit] = 0
+
+                #tData[year][unit] .append(chunk)
+
+        File.writeFile( tData, tDataPath)
+    except(IOError):
+        raise IOError
 
 def updateTData(genData, tDataPath):
 
@@ -388,7 +436,6 @@ def updateTData(genData, tDataPath):
 
     File.writeFile( tData, tDataPath)
 
-
 def updateCData(genData, cDataPath):
 
     cData = File.readFile(cDataPath)
@@ -418,7 +465,7 @@ def updateCData(genData, cDataPath):
 
     #dopuniti postojecke chunkove sa novim godinama za postojece Unite
     for d in cData:
-        for k,v in list(d.items()):
+        for k in list(d):
             if k!= 'UnitId':
                 if k in yearsRemove:
                     del d[k]
@@ -436,7 +483,6 @@ def updateCData(genData, cDataPath):
 
     File.writeFile( cData, cDataPath)
 
-
 @case_api.route("/saveCase", methods=['POST'])
 def saveCase():
     try:
@@ -449,12 +495,16 @@ def saveCase():
             hDataPath = Path(Config.DATA_STORAGE, case, "hData.json")
             tDataPath = Path(Config.DATA_STORAGE, case, "tData.json")
             cDataPath = Path(Config.DATA_STORAGE, case, "cData.json")
+
+            tDataPath_df = Path(Config.DATA_STORAGE, case, "tData_df.json")
             #edit case sa istim imenom
             if case == casename:
                 File.writeFile( genData, genDataPath)
                 updateTData(genData, tDataPath)
                 updateHData(genData, hDataPath)
                 updateCData(genData, cDataPath)
+
+                defaultTData_DF(genData, tDataPath_df)
                 response = {
                     "message": "You have change case general data!",
                     "status_code": "edited"
@@ -466,6 +516,8 @@ def saveCase():
                     updateTData(genData, tDataPath)
                     updateHData(genData, hDataPath)
                     updateCData(genData, cDataPath)
+
+                    defaultTData_DF(genData, tDataPath_df)
                     os.rename(Path(Config.DATA_STORAGE,case), Path(Config.DATA_STORAGE,casename ))
                     session['elsecase'] = casename
                     response = {
@@ -486,10 +538,15 @@ def saveCase():
                 hDataPath = Path(Config.DATA_STORAGE, casename, "hData.json")
                 tDataPath = Path(Config.DATA_STORAGE, casename, "tData.json")
                 cDataPath = Path(Config.DATA_STORAGE, casename, "cData.json")
+
+                tDataPath_df = Path(Config.DATA_STORAGE, casename, "tData_df.json")
+
                 File.writeFile( genData, genDataPath)
                 defaultHData(genData, hDataPath)
                 defaultTData(genData, tDataPath)
                 defaultCData(genData, cDataPath)
+
+                defaultTData_DF(genData, tDataPath_df)
                 response = {
                     "message": "You have created new case!",
                     "status_code": "created"

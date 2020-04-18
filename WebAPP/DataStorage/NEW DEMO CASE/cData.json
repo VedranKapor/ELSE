@@ -1,0 +1,62 @@
+[
+    {
+        "2020": false,
+        "2025": true,
+        "2030": true,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": true,
+        "UnitId": "UT_00000"
+    },
+    {
+        "2020": true,
+        "2025": true,
+        "2030": true,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": false,
+        "UnitId": "UT_hek2s"
+    },
+    {
+        "2020": false,
+        "2025": false,
+        "2030": true,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": true,
+        "UnitId": "UT_k1b11"
+    },
+    {
+        "2020": true,
+        "2025": true,
+        "2030": true,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": true,
+        "UnitId": "UT_3dsud"
+    },
+    {
+        "2020": false,
+        "2025": false,
+        "2030": false,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": true,
+        "UnitId": "UT_32k76"
+    },
+    {
+        "2020": false,
+        "2025": false,
+        "2030": false,
+        "2035": true,
+        "2040": true,
+        "2045": true,
+        "2050": true,
+        "UnitId": "UT_0an32"
+    }
+]

@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from Routes.Upload.UploadRoute import upload_api
 from Routes.Case.CaseRoute import case_api
+from Routes.Calculation.CalculationRoute import calc_api
 
 
 # template_dir = os.path.abspath('WebAPP')
@@ -21,6 +22,7 @@ app.config['SECRET_KEY'] = '12345'
 
 app.register_blueprint(upload_api)
 app.register_blueprint(case_api)
+app.register_blueprint(calc_api)
 
 
 CORS(app)

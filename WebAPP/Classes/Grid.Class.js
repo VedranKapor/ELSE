@@ -265,4 +265,40 @@ export class Grid {
         });
     }
 
+    static simulationGrid($div, dataAdapter, columns){
+        var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties) {
+            return '<span style="margin: 4px;">' + value + ' h</span>';
+        }
+        $div.jqxGrid({
+            width: '100%',
+            autoheight: true,
+            rowsheight: 25,
+            source: dataAdapter,
+            columnsautoresize: true,
+            columnsresize:true,
+            pageable: true,
+            columnsResize: true,
+            theme: this.theme(),
+            pagerheight: 26,
+            editable: false,
+            altrows: false,
+            pagesize: 8,
+            selectionmode: 'multiplecellsadvanced',
+            enablehover: false,
+            editmode: 'selectedcell',
+            columns:columns,
+            // handlekeyboardnavigation: function (event) {
+            //     var key = event.charCode ? event.charCode : event.keyCode ? event.keyCode : 0;
+            //     if (key == 86) {
+            //         console.log('paste'),
+            //         console.log('e ', event);
+            //         return true;
+            //     } else if (key == 27) {
+            //         alert('Pressed Esc Key.');
+            //         return true;
+            //     }
+            // },
+        });
+    }
+
 }

@@ -53,6 +53,15 @@ crossroads.addRoute('/ConfigData', function() {
     });
 });
 
+crossroads.addRoute('/Simulation', function() {
+    $('#content').html('<h1 class="ajax-loading-animation"><i class="fa fa-cog fa-spin"></i> Loading...</h1>');
+    import('../App/Controller/Simulation.js')
+    .then(Simulation => {
+        $(".else-content").load('App/View/Simulation.html');
+        Simulation.default.onLoad();
+    });
+});
+
 crossroads.bypassed.add(function(request) {
     console.error(request + ' seems to be a dead end...');
 });

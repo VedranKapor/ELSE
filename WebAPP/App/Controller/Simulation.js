@@ -1,22 +1,24 @@
 import { Message } from "../../Classes/Message.Class.js";
 import { Base } from "../../Classes/Base.Class.js";
 import { Html } from "../../Classes/Html.Class.js";
-import { Model } from "../Model/HourlyData.Model.js";
+import { Model } from "../Model/Simulation.Model.js";
 import { Grid } from "../../Classes/Grid.Class.js";
 import { Chart } from "../../Classes/Chart.Class.js";
 import { Else } from "../../Classes/Else.Class.js";
+import { Calculate } from "../../Classes/Calculate.Class.js";
 import { MessageSelect } from "./MessageSelect.js";
 
-export default class HourlyData {
+export default class Simulation {
     static onLoad(){
         Base.getSession()
         .then(response =>{
             let casename = response['session']
+            console.log(casename);
             const promise = [];
             promise.push(casename);
             const genData = Else.genData(casename);
             promise.push(genData); 
-            const hData = Else.gethData(casename);
+            const hData = Calculate.normalizePattern(casename);
             promise.push(hData); 
             return Promise.all(promise);
         })
@@ -28,7 +30,7 @@ export default class HourlyData {
                 this.initPage(model);
                 this.initEvents(model);
             }else{
-                MessageSelect.init(HourlyData.refreshPage.bind(HourlyData));
+                MessageSelect.init(Simulation.refreshPage.bind(Simulation));
             }
         })
         .catch(error =>{ 
@@ -37,7 +39,7 @@ export default class HourlyData {
     }
 
     static initPage(model, year = model.genData['else-years'][0]){
-console.log(model)
+
         Message.clearMessages();
         Html.title(model.casename);
         Html.ddlyears(model.genData['else-years'], model.genData['else-years'][0]);
@@ -52,7 +54,7 @@ console.log(model)
 
         let $gridJson = $('#else-grid-json');
         let $chartJson = $('#else-chart-json');
-        Grid.hourlyGrid($gridJson, dataAdapterJson, model.columns);
+        Grid.simulationGrid($gridJson, dataAdapterJson, model.columns);
         Chart.initChart($chartJson,dataAdapterJson, model.series);
     }
 
@@ -63,7 +65,7 @@ console.log(model)
             promise.push(casename);
             const genData = Else.genData(casename);
             promise.push(genData); 
-            const hData = Else.gethData(casename);
+            const hData = Calculate.normalizePattern(casename);
             promise.push(hData); 
             return Promise.all(promise);
         })
@@ -100,7 +102,7 @@ console.log(model)
             var dataAdapterJson = new $.jqx.dataAdapter(sourceJson, { autoBind: true });
             let $gridJson = $('#else-grid-json');
             //let $chartJson = $('#else-chart-json');
-            Grid.hourlyGrid($gridJson, dataAdapterJson, model.columns);
+            Grid.simulationGrid($gridJson, dataAdapterJson, model.columns);
             //$gridJson.jqxGrid('refreshdata');
             //$gridJson.jqxGrid('updatebounddata', 'cells');
             //Chart.initChart($chartJson,dataAdapterJson, model.series);

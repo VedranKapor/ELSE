@@ -12,18 +12,13 @@ export class Model {
             let units = []
             datafields.push({ name: 'Hour', type:'string' });
             datafields.push({ name: 'Demand', type:'number' });
-            columns.push({ text: 'Hour', datafield: 'Hour',pinned:true, editable: false,  minWidth: 75, maxWidth: 120, cellsrenderer:cellsrenderer})
-            columns.push({ text: 'Demand', datafield: 'Demand',  cellsFormat: 'd', cellsalign: 'right'})
+            columns.push({ text: 'Hour', datafield: 'Hour',pinned:true, editable: false,  minWidth: 45, maxWidth: 120, cellsrenderer:cellsrenderer})
+            columns.push({ text: 'Demand', datafield: 'Demand',  cellsFormat: 'd2', cellsalign: 'right'})
             series.push( { dataField: 'Demand', displayText: 'demand', lineWidth: 1., color: 'red' });
     
             $.each(genData['else-units'], function (name, obj) {
-                if(obj.h){
-                    //console.log(name, obj)
-                    columns.push({ text: obj.Unitname + " <sub>["+obj.Fuel+"]</sub>", datafield: obj.UnitId, cellsFormat: 'd', cellsalign: 'right' });
-                    series.push( { dataField: obj.UnitId, displayText: obj.Unitname, lineWidth: 1 });
-                }else{
-                    columns.push({ text: obj.Unitname + " <sub>["+obj.Fuel+"]</sub>", datafield: obj.UnitId, cellsFormat: 'd', cellsalign: 'right', hidden:true });
-                }
+                columns.push({ text: obj.Unitname + " <sub>["+obj.Fuel+"]</sub>", datafield: obj.UnitId, cellsFormat: 'd2', cellsalign: 'right' });
+                series.push( { dataField: obj.UnitId, displayText: obj.Unitname, lineWidth: 1 });
                 datafields.push({ name: obj.UnitId, type:'number' });
                 units.push(obj.UnitId)
             });
