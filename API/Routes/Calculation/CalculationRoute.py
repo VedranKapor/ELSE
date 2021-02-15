@@ -23,10 +23,10 @@ def normalizePattern():
             hData = File.readFile(hDataPath)
             tData = File.readFile(tDataPath)
 
-            YEARS = genData['else-years']
-            UNITS = [unit['UnitId'] for unit in genData['else-units'] ]
+            YEARS = genData['osy-years']
+            UNITS = [unit['UnitId'] for unit in genData['osy-units'] ]
 
-            GD = pd.json_normalize(genData,  "else-units")
+            GD = pd.json_normalize(genData,  "osy-units")
             TD = pd.DataFrame(tData)
 
             def egFunc(unit,year):

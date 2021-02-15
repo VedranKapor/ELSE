@@ -2,7 +2,7 @@
 <html lang="en-us">
 	<head>
 		<meta charset="utf-8">
-		<title> ELSE.ver.1.0 </title>
+		<title> Osemosys.ver.1.0 </title>
 		<meta name="description" content="">
 		<meta name="author" content="">
 			
@@ -13,6 +13,10 @@
 
 
 		<link rel="stylesheet" type="text/css" media="screen" href="References/smartadmin/css/bootstrap.min.css">
+
+		<!-- <link rel="stylesheet" media="all" href="{{ url_for('static', filename='References/smartadmin/css/bootstrap.min.css')}}"> -->
+		<!-- <script  src="{{ url_for('static', filename='script.js')}}" data-turbolinks-track="reload"></script> -->
+
 		<link rel="stylesheet" type="text/css" media="screen" href="References/smartadmin/css/font-awesome.min.css">
 
 		<!-- SmartAdmin Styles : Caution! DO NOT change the order -->
@@ -24,7 +28,7 @@
 		<link rel="stylesheet" href="References/jqwidgets/styles/jqx.bootstrap.css" type="text/css" />
 
 		<!-- We recommend you use "your_style.css" to override SmartAdmin-->
-		<link rel="stylesheet" type="text/css" media="screen" href="References/smartadmin/css/else.css"> 
+		<link rel="stylesheet" type="text/css" media="screen" href="References/smartadmin/css/osy.css"> 
 
 		<!-- #FAVICONS -->
 		<link rel="shortcut icon" href="References/smartadmin/img/favicon/favicon.ico" type="image/x-icon">
@@ -70,11 +74,11 @@
 		
 		<!-- #MAIN PANEL -->
 		<div id="main" role="main">	
-			<div id="else-danger"></div>	
-			<div id="else-warning"></div>	
-			<div id="else-info"></div>	
-			<div id="else-success"></div>			
-			<div class="else-content pace-done" id="content"></div>
+			<div id="osy-danger"></div>	
+			<div id="osy-warning"></div>	
+			<div id="osy-info"></div>	
+			<div id="osy-success"></div>			
+			<div class="osy-content pace-done" id="content"></div>
 		</div>
 
 		<!-- #PAGE FOOTER -->
@@ -109,6 +113,12 @@
 		<script src="References/smartadmin/js/app.min.js"></script>
 
 		<!--ROUTES-->
-		<script type="module" src="Routes/routes.js"></script> 
+		<!-- <script src="{{ url_for('static', filename='Routes/routes.js')}}"></script> -->
+		<!-- <script type="module" src="Routes/routes.js"></script> -->
+
+		<!-- Radilo sa reg edit promjenom -->
+		<!-- <script type="module" src="{{ url_for('static', filename='Routes/routes.js')}}" data-turbolinks-track="reload"></script>  -->
+
+		<script type="module" src="{{ url_for('static', filename='Routes/routes.js') }}"></script>
 	</body>
 </html>

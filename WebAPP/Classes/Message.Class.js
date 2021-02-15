@@ -1,14 +1,14 @@
 export class Message {
 
     static clearMessages(){
-        $( "#else-warning" ).empty();
-        $( "#else-success" ).empty();
-        $( "#else-danger" ).empty();
-        $( "#else-info" ).empty();
+        $( "#osy-warning" ).empty();
+        $( "#osy-success" ).empty();
+        $( "#osy-danger" ).empty();
+        $( "#osy-info" ).empty();
     }
 
     static warning(message){
-        $("#else-warning").html(`<div class="alert alert-warning fade in">
+        $("#osy-warning").html(`<div class="alert alert-warning fade in">
                                         <button class="close" data-dismiss="alert">×</button>
                                         <i class="fa-fw fa fa-warning"></i>
                                         <strong>Warning</strong> `+ message +`
@@ -16,7 +16,7 @@ export class Message {
     }
 
     static success(message){
-        $("#else-success").html(`<div class="alert alert-success fade in">
+        $("#osy-success").html(`<div class="alert alert-success fade in">
                                         <button class="close" data-dismiss="alert">×</button>
                                         <i class="fa-fw fa fa-check"></i>
                                         <strong>Success</strong> `+ message +`
@@ -24,7 +24,7 @@ export class Message {
     }
 
     static info(message){
-        $("#else-info").html(`<div class="alert alert-info fade in">
+        $("#osy-info").html(`<div class="alert alert-info fade in">
                                         <button class="close" data-dismiss="alert">×</button>
                                         <i class="fa-fw fa fa-info"></i>
                                         <strong>Info!</strong> `+ message +`
@@ -32,7 +32,7 @@ export class Message {
     }
 
     static danger(message){
-        $("#else-danger").html(`<div class="alert alert-danger fade in">
+        $("#osy-danger").html(`<div class="alert alert-danger fade in">
                                         <button class="close" data-dismiss="alert">×</button>
                                         <i class="fa-fw fa fa-times"></i>
                                         <strong>Error!</strong> `+ message +`

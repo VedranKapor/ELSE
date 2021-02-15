@@ -7,7 +7,6 @@ export class MessageSelect {
         Base.getCaseStudies()
         .then(cases => {
             let model = new Model(cases);
-            console.log(model.cases)
             Message.SmartMessageBoxDDL(model.cases, init_f);
         })
         .catch(error =>{ 

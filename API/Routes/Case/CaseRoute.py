@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 import shutil
 from distutils.dir_util import copy_tree
-
 from Classes.Base import Config
 from Classes.Base.FileClass import File
+from Classes.Case.CaseClass import OsemosysCase
 
 case_api = Blueprint('CaseRoute', __name__)
 
@@ -26,7 +26,7 @@ def getDesc():
 
         response = {
              "message": "Get case description success",
-             "desc": genData['else-desc']
+             "desc": genData['osy-desc']
         }
         return jsonify(response), 200
     except(IOError):
@@ -49,7 +49,7 @@ def copy():
             #rename casename in genData
             casePath = Path(Config.DATA_STORAGE, case_copy, 'genData.json')
             genData = File.readFile(casePath)
-            genData['else-casename'] = case_copy
+            genData['osy-casename'] = case_copy
             File.writeFile(genData, casePath)
             response = {
                 "message": 'Case <b>'+ case + '</b> copied!',
@@ -68,8 +68,8 @@ def deleteCase():
         casePath = Path(Config.DATA_STORAGE, case)
         shutil.rmtree(casePath)
 
-        if case == session.get('elsecase'):
-            session['elsecase'] = None
+        if case == session.get('osycase'):
+            session['osycase'] = None
             response = {
                 "message": 'Case <b>'+ case + '</b> deleted!',
                 "status_code": "success_session"
@@ -85,441 +85,93 @@ def deleteCase():
     except OSError:
         raise OSError
 
-@case_api.route("/getcData", methods=['POST'])
-def getcData():
+@case_api.route("/getData", methods=['POST'])
+def getData():
     try:
         casename = request.json['casename']
+        dataJson = request.json['dataJson']
         if casename != None:
-            genDataPath = Path(Config.DATA_STORAGE,casename,"cData.json")
-            hData = File.readFile(genDataPath)
-            response = hData    
+            RYTpath = Path(Config.DATA_STORAGE,casename,dataJson)
+            RYTdata = File.readFile(RYTpath)
+            response = RYTdata    
         else:  
             response = None     
         return jsonify(response), 200
     except(IOError):
         return jsonify('No existing cases!'), 404
 
-@case_api.route("/gethData", methods=['POST'])
-def gethData():
-    try:
-        casename = request.json['casename']
-        if casename != None:
-            genDataPath = Path(Config.DATA_STORAGE,casename,"hData.json")
-            hData = File.readFile(genDataPath)
-            response = hData    
-        else:  
-            response = None     
-        return jsonify(response), 200
-    except(IOError):
-        return jsonify('No existing cases!'), 404
-
-@case_api.route("/gettData", methods=['POST'])
-def gettData():
-    try:
-        casename = request.json['casename']
-        if casename != None:
-            genDataPath = Path(Config.DATA_STORAGE,casename,"tData.json")
-            hData = File.readFile(genDataPath)
-            response = hData    
-        else:  
-            response = None     
-        return jsonify(response), 200
-    except(IOError):
-        return jsonify('No existing cases!'), 404
-
-@case_api.route("/genData", methods=['POST'])
-def genData():
-    try:
-        case = request.json['casename']
-        if case != None:
-            genDataPath = Path(Config.DATA_STORAGE,case,"genData.json")
-            genData = File.readFile(genDataPath)
-            response = genData
-        else:
-            response = None    
-        return jsonify(response), 200
-    except(IOError):
-        return jsonify('Case or case data not found!'), 404
-    except(IndexError):
-        return jsonify('File exist, data corrupt!'), 404
-
-@case_api.route("/updatehData", methods=['POST'])
-def updatehData():
+@case_api.route("/updateData", methods=['POST'])
+def updateData():
     try:
         data = request.json['data']
-        year = request.json['year']
-        case = session.get('elsecase', None)
-        hDataPath = Path(Config.DATA_STORAGE, case, "hData.json")
+        param = request.json['param']
+        case = session.get('osycase', None)
+        dataJson = request.json['dataJson']
+        dataPath = Path(Config.DATA_STORAGE, case, dataJson)
         if case != None:
-            hData = File.readFile(hDataPath)
-            hData[year] = data
-            File.writeFile( hData, hDataPath)
+            sourceData = File.readFile(dataPath)
+            sourceData[param] = data
+            File.writeFile( sourceData, dataPath)
             response = {
-                "message": "You have update hourly data",
+                "message": "You have updated data!",
                 "status_code": "success"
             }      
         return jsonify(response), 200
     except(IOError):
         return jsonify('No existing cases!'), 404
-
-@case_api.route("/updatetData", methods=['POST'])
-def updatetData():
-    try:
-        data = request.json['data']
-        case = session.get('elsecase', None)
-        tDataPath = Path(Config.DATA_STORAGE, case, "tData.json")
-        if case != None:
-            #tData = File.readFile(tDataPath)
-            tData = data
-            File.writeFile( tData, tDataPath)
-            response = {
-                "message": "You have update hourly data",
-                "status_code": "success"
-            }      
-        return jsonify(response), 200
-    except(IOError):
-        return jsonify('No existing cases!'), 404
-
-@case_api.route("/updatecData", methods=['POST'])
-def updatecData():
-    try:
-        data = request.json['data']
-        case = session.get('elsecase', None)
-        cDataPath = Path(Config.DATA_STORAGE, case, "cData.json")
-        if case != None:
-            #cData = File.readFile(cDataPath)
-            cData = data
-            File.writeFile( cData, cDataPath)
-            response = {
-                "message": "You have update hourly data",
-                "status_code": "success"
-            }      
-        return jsonify(response), 200
-    except(IOError):
-        return jsonify('No existing cases!'), 404
-
-def defaultHData(genData, hDataPath):
-    try:
-        years = genData['else-years']
-        units = genData['else-units']
-        hData = {}
-        for year in years:
-            hData[year] = []
-            for i in range(1, Config.SIM_PERIOD):
-                chunk = {}
-                chunk['Hour'] = i 
-                chunk['Demand'] = 1 
-                for unit in units:
-                    if unit['h']:
-                        chunk[unit['UnitId']] = 1
-                hData[year].append(chunk)
-
-        File.writeFile( hData, hDataPath)
-    except(IOError):
-        raise IOError
-
-def defaultCData(genData, cDataPath):
-    try:
-        years = genData['else-years']
-        units = genData['else-units']
-        
-        cData = []
-        for unit in units:
-            chunk = {}
-            chunk['UnitId'] = unit['UnitId']
-            for year in years:
-                chunk[year] = True 
-            cData.append(chunk)
-
-        File.writeFile( cData, cDataPath)
-    except(IOError):
-        raise IOError
-
-def defaultTData(genData, tDataPath):
-    try:
-        years = genData['else-years']
-        units = genData['else-units']
-        tData = []
-        for year in years:
-            for unit in units:
-                chunk = {}
-                chunk['Year'] = year
-                chunk['UnitId'] = unit['UnitId']
-                # chunk['Unitname'] = unit['Unitname']
-                # chunk['Fuel'] = unit['Fuel']
-                # chunk['IC'] = unit['IC']
-                chunk['CF'] = 0
-                chunk['EF'] = 0
-                chunk['FUC'] = 0
-                chunk['INC'] = 0
-                chunk['OCF'] = 0
-                chunk['OCV'] = 0
-                chunk['CO2'] = 0
-                chunk['SO2'] = 0
-                chunk['NOX'] = 0
-                chunk['Other'] = 0
-                tData.append(chunk)
-        File.writeFile( tData, tDataPath)
-    except(IOError):
-        raise IOError
-
-def updateHData(genData, hDataPath):
-
-    hData = File.readFile(hDataPath)
-    yearsExi = [ yr for yr in hData]
-    yearsNew = genData['else-years']
-    yearsAdd = set(yearsNew) - set(yearsExi)
-    yearsRemove = set(yearsExi) - set(yearsNew)
-
-    unitsExi = set()
-    for h, obj in list(hData.items()):
-        for d in obj:
-            for k in d:
-                if k!= 'Hour' and k!='Demand':
-                    unitsExi.add(k)
-
-
-    #unitsNew = [ unit['UnitId'] for unit in genData['else-units'] if unit['h']]
-    unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
-
-    yearChunk =[]
-    for i in range(1, Config.SIM_PERIOD):
-        chunk = {}
-        chunk['Hour'] = i 
-        chunk['Demand'] = 1 
-        for unit in unitsNew:
-            chunk[unit] = 1
-        yearChunk.append(chunk)
-
-    unitsAdd = set(unitsNew) - unitsExi
-    unitsRemove = unitsExi - set(unitsNew)
-
-    for h, obj in list(hData.items()):
-        if h in yearsRemove:
-            del hData[h] 
-        for d in obj:
-            for k in list(d):
-                if k!= 'Hour' and k!='Demand':
-                    if k in unitsRemove:
-                        del d[k]
-                    for ut in unitsAdd:
-                        d[ut] = 1
-
-    for yr in yearsAdd: 
-        hData[yr] = yearChunk 
-
-    File.writeFile( hData, hDataPath)
-
-def defaultTData_DF(genData, tDataPath):
-    try:
-       
-        years = genData['else-years']
-        units = [unit['UnitId'] for unit in genData['else-units'] ]
-
-        tData = {}
-        tData['CF'] = {}
-        tData['EF'] = {}
-        tData['FUC'] = {}
-        tData['INC'] = {}
-        tData['OCF'] = {}
-        tData['OCV'] = {}
-        tData['CO2'] = {}
-        tData['SO2'] = {}
-        tData['NOX'] = {}
-        tData['Other'] = {}
-
-        for year in years:
-            tData['CF'][year] = {}
-            tData['EF'][year] = {}
-            tData['FUC'][year] = {}
-            tData['INC'][year] = {}
-            tData['OCF'][year] = {}
-            tData['OCV'][year] = {}
-            tData['CO2'][year] = {}
-            tData['SO2'][year] = {}
-            tData['NOX'][year] = {}
-            tData['Other'][year] = {}
-            for unit in units:
-                tData['CF'][year][unit] = 0
-                tData['EF'][year][unit] = 0
-                tData['FUC'][year][unit] = 0
-                tData['INC'][year][unit] = 0
-                tData['OCF'][year][unit] = 0
-                tData['OCV'][year][unit] = 0
-                tData['CO2'][year][unit] = 0
-                tData['SO2'][year][unit] = 0
-                tData['NOX'][year][unit] = 0
-                tData['Other'][year][unit] = 0
-
-                #tData[year][unit] .append(chunk)
-
-        File.writeFile( tData, tDataPath)
-    except(IOError):
-        raise IOError
-
-def updateTData(genData, tDataPath):
-
-    tData = File.readFile(tDataPath)
-
-    #definisi godine yearsExi = godine koje postoje u tData existing years
-    #yearsNew godine koje smo izabrali u editu case, nove godine yearsNew
-    #yearsAdd godine koje trebamo dodati u tData i to je yearsExi-yearsNew sve one godine koje ne postoje u tData a dodali smo ihtj sada postoje u yearNew
-    yearsExi = [ yr['Year'] for yr in tData]
-    yearsNew = genData['else-years']
-
-    yearsAdd = set(yearsNew) - set(yearsExi)
-    yearsRemove = set(yearsExi) - set(yearsNew)
-
-    #dio za unite, ista logika kao za godine
-    unitsExi = [ unit['UnitId'] for unit in tData]
-    unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
-
-    unitsAdd = set(unitsNew) - set(unitsExi)
-    unitsRemove = set(unitsExi) - set(unitsNew)
-
-    #iz posojeceg tData izbaciti sve one elemente koji su u unitRemove ili yearsRemove
-    tData = [ unit for unit in tData if unit['UnitId'] not in unitsRemove and unit['Year'] not in yearsRemove]
-
-    #napraviti dict da biunijeti imena i kapacitete prilikom kreiranje chunk
-    #ne mozemo direktno citati dict jer je ulisti prilikom kreiranje chunk-a
-    # unitData = {}
-    # for obj in genData['else-units']:
-    #     unitData[obj['UnitId']] = {}
-        # unitData[obj['UnitId']]['Unitname'] = obj['Unitname']
-        # unitData[obj['UnitId']]['Fuel'] = obj['Fuel']
-        # unitData[obj['UnitId']]['IC'] = obj['IC']
-
-    #za sve izabrane godine dodaj samo nove jedinice
-    for yr in yearsNew:
-        for ut in unitsAdd:
-            chunk = {}
-            chunk['Year'] = yr
-            chunk['UnitId'] = ut 
-            # chunk['Unitname'] = unitData[ut]['Unitname']
-            # chunk['Fuel'] = unitData[ut]['Fuel']
-            # chunk['IC'] = unitData[ut]['IC']
-            chunk['CF'] = 0
-            chunk['EF'] = 0
-            chunk['FUC'] = 0
-            chunk['INC'] = 0
-            chunk['OCF'] = 0
-            chunk['OCV'] = 0
-            chunk['CO2'] = 0
-            chunk['SO2'] = 0
-            chunk['NOX'] = 0
-            chunk['Other'] = 0
-            tData.append(chunk)
-
-
-    #updatUnits je sve postojece jednice minus one koje se remove, ovdje nisu ukljucene nove jednic jer smo njih dodali u prethodnom loop
-    #za sve dodane godine u studiji dodaj samo postojece jednice bez onih koje se remove
-    unitsExiUpdate = set(unitsExi) - set(unitsRemove)
-    for yr in yearsAdd:
-        for ut in unitsExiUpdate:
-            chunk = {}
-            chunk['Year'] = yr
-            chunk['UnitId'] = ut 
-            # chunk['Unitname'] = unitData[ut]['Unitname']
-            # chunk['Fuel'] = unitData[ut]['Fuel']
-            # chunk['IC'] = unitData[ut]['IC']
-            chunk['CF'] = 0
-            chunk['EF'] = 0
-            chunk['FUC'] = 0
-            chunk['INC'] = 0
-            chunk['OCF'] = 0
-            chunk['OCV'] = 0
-            chunk['CO2'] = 0
-            chunk['SO2'] = 0
-            chunk['NOX'] = 0
-            chunk['Other'] = 0
-            tData.append(chunk)
-
-    File.writeFile( tData, tDataPath)
-
-def updateCData(genData, cDataPath):
-
-    cData = File.readFile(cDataPath)
-    #definisi godine yearsExi = godine koje postoje u cData existing years
-    #yearsNew godine koje smo izabrali u editu case, nove godine yearsNew
-    #yearsAdd godine koje trebamo dodati u cData i to je yearsExi-yearsNew sve one godine koje ne postoje u cData a dodali smo ihtj sada postoje u yearNew
-    # yearsExi = [ {k for k in chunk if k != 'UnitId'}   for chunk in cData]
-    yearsExi = set()
-    for yr in cData[0]:
-        if yr != 'UnitId':
-            yearsExi.add(yr)
-
-    yearsNew = genData['else-years']
-
-    yearsAdd = set(yearsNew) - yearsExi
-    yearsRemove = yearsExi - set(yearsNew)
-
-    #dio za unite, ista logika kao za godine
-    unitsExi = [ unit['UnitId'] for unit in cData]
-    unitsNew = [ unit['UnitId'] for unit in genData['else-units']]
-
-    unitsAdd = set(unitsNew) - set(unitsExi)
-    unitsRemove = set(unitsExi) - set(unitsNew)
-
-    #iz posojeceg cData izbaciti sve one elemente koji su u unitRemove ili yearsRemove
-    cData = [ unit for unit in cData if unit['UnitId'] not in unitsRemove ]
-
-    #dopuniti postojecke chunkove sa novim godinama za postojece Unite
-    for d in cData:
-        for k in list(d):
-            if k!= 'UnitId':
-                if k in yearsRemove:
-                    del d[k]
-                for ya in yearsAdd:
-                    d[ya] = True
-
-    #add new chunk of Unit configuration with all years True
-    for unit in unitsAdd:
-        chunk = {}
-        chunk['UnitId'] = unit
-        for year in yearsNew:
-            chunk[year] = True
-        cData.append(chunk)
-
-
-    File.writeFile( cData, cDataPath)
 
 @case_api.route("/saveCase", methods=['POST'])
 def saveCase():
     try:
         genData = request.json['data']
-        casename = genData['else-casename']
-        case = session.get('elsecase', None)
+        casename = genData['osy-casename']
+        case = session.get('osycase', None)
 
-        if case != None:
+        #ako je izabran case, edit mode
+        if case != None and case != '':
             genDataPath = Path(Config.DATA_STORAGE, case, "genData.json")
-            hDataPath = Path(Config.DATA_STORAGE, case, "hData.json")
-            tDataPath = Path(Config.DATA_STORAGE, case, "tData.json")
-            cDataPath = Path(Config.DATA_STORAGE, case, "cData.json")
+            # RYTpath = Path(Config.DATA_STORAGE, case, "RYT.json")
+            # RYTspath = Path(Config.DATA_STORAGE, case, "RYTs.json")
+            # RYCpath = Path(Config.DATA_STORAGE, case, "RYC.json")
 
-            tDataPath_df = Path(Config.DATA_STORAGE, case, "tData_df.json")
             #edit case sa istim imenom
             if case == casename:
-                File.writeFile( genData, genDataPath)
-                updateTData(genData, tDataPath)
-                updateHData(genData, hDataPath)
-                updateCData(genData, cDataPath)
+                #update modela 
+                updateRYTmodel(case, genData)
+                updateRYTCmodel(case, genData)
+                updateRYTsmodel(case, genData)
+                updateRYCmodel(case, genData)
+                updateRYEmodel(case, genData)
+                updateRYTTsmodel(case, genData)
+                updateRYCTsmodel(case, genData)
+                updateRYTEmodel(case, genData)
 
-                defaultTData_DF(genData, tDataPath_df)
+                #update genData
+                File.writeFile( genData, genDataPath)
+
                 response = {
                     "message": "You have change case general data!",
                     "status_code": "edited"
                 }
-            #edit case sa drugim imenom, mramo odma provjeriit da li novo ime postoji u sistemu
+            #edit case sa drugim imenom, moramo provjeriit da li novo ime postoji u sistemu
             else:
                 if not os.path.exists(Path(Config.DATA_STORAGE,casename)):
-                    File.writeFile( genData, genDataPath)
-                    updateTData(genData, tDataPath)
-                    updateHData(genData, hDataPath)
-                    updateCData(genData, cDataPath)
+                    updateRYTmodel(case, genData)
+                    updateRYTCmodel(case, genData)
+                    updateRYTsmodel(case, genData)
+                    updateRYCmodel(case, genData)
+                    updateRYEmodel(case, genData)
+                    updateRYTTsmodel(case, genData)
+                    updateRYCTsmodel(case, genData)
+                    updateRYTEmodel(case, genData)
 
-                    defaultTData_DF(genData, tDataPath_df)
+                    #update gen data sa novim imenom
+                    File.writeFile( genData, genDataPath)
+
+                    #rename case sa novim imenom
                     os.rename(Path(Config.DATA_STORAGE,case), Path(Config.DATA_STORAGE,casename ))
-                    session['elsecase'] = casename
+                    session['osycase'] = casename
+                    
                     response = {
                         "message": "You have change case general data!",
                         "status_code": "edited"
@@ -529,24 +181,32 @@ def saveCase():
                     response = {
                         "message": "Case with same name already exists!",
                         "status_code": "exist"
-                    } 
+                    }
+        #novi case 
         else:
             if not os.path.exists(Path(Config.DATA_STORAGE,casename)):
-                session['elsecase'] = casename
+                session['osycase'] = casename
                 os.makedirs(Path(Config.DATA_STORAGE,casename))
                 genDataPath = Path(Config.DATA_STORAGE, casename, "genData.json")
-                hDataPath = Path(Config.DATA_STORAGE, casename, "hData.json")
-                tDataPath = Path(Config.DATA_STORAGE, casename, "tData.json")
-                cDataPath = Path(Config.DATA_STORAGE, casename, "cData.json")
-
-                tDataPath_df = Path(Config.DATA_STORAGE, casename, "tData_df.json")
+                RYTpath = Path(Config.DATA_STORAGE, casename, "RYT.json")
+                RYTCpath = Path(Config.DATA_STORAGE, casename, "RYTC.json")
+                RYTspath = Path(Config.DATA_STORAGE, casename, "RYTs.json")
+                RYCpath = Path(Config.DATA_STORAGE, casename, "RYC.json")
+                RYEpath = Path(Config.DATA_STORAGE, casename, "RYE.json")
+                RYTTspath = Path(Config.DATA_STORAGE, casename, "RYTTs.json")
+                RYCTspath = Path(Config.DATA_STORAGE, casename, "RYCTs.json")
+                RYTEpath = Path(Config.DATA_STORAGE, casename, "RYTE.json")
 
                 File.writeFile( genData, genDataPath)
-                defaultHData(genData, hDataPath)
-                defaultTData(genData, tDataPath)
-                defaultCData(genData, cDataPath)
-
-                defaultTData_DF(genData, tDataPath_df)
+                default_RYT(genData, RYTpath)
+                default_RYTC(genData, RYTCpath)
+                default_RYTs(genData, RYTspath)
+                default_RYC(genData, RYCpath)
+                default_RYE(genData, RYEpath)
+                default_RYTTs(genData, RYTTspath)
+                default_RYCTs(genData, RYCTspath)
+                default_RYTE(genData, RYTEpath)
+                
                 response = {
                     "message": "You have created new case!",
                     "status_code": "created"
@@ -561,13 +221,428 @@ def saveCase():
     except(IOError):
         return jsonify('Error saving case IOError!'), 404
 
-    ######################3citsti DICT
-        # hData = {}
-        # for year in years:
-        #     hData[year] = {}
-        #     for i in range(10):
-        #         hData[year][i] = {}
-        #         hData[year][i]['Hour'] = i 
-        #         for unit in units:
-        #             if unit['int']:
-        #                 hData[year][i][unit['unitId']] = 0 
+def keys_exists(element, *keys):
+    '''
+    Check if *keys (nested) exists in `element` (dict).
+    '''
+    if not isinstance(element, dict):
+        raise AttributeError('keys_exists() expects dict as first argument.')
+    if len(keys) == 0:
+        raise AttributeError('keys_exists() expects at least two arguments, one given.')
+
+    _element = element
+    for key in keys:
+        try:
+            _element = _element[key]
+        except KeyError:
+            return False
+    return True
+
+def default_RYT(genData, RYTpath):
+    try:
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTdata = {}
+        for ryt in Config.PARAMETERS['RYT']:
+            RYTdata[ryt['id']] = []
+            for tech in techs:
+                chunk = {}
+                chunk['TechId'] = tech['TechId']
+                for year in years:
+                    chunk[year] = 0  
+                RYTdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTdata, RYTpath)
+    except(IOError):
+        raise IOError
+
+def updateRYTmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        rytJson = OsemosysModel.getJsonData('RYT.json')
+        RYTsource = OsemosysModel.RYT(rytJson)
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTdata = {}
+        for ryt in Config.PARAMETERS['RYT']:
+            RYTdata[ryt['id']] = []
+            for tech in techs:
+                chunk = {}
+                chunk['TechId'] = tech['TechId']
+                for year in years:
+                    if keys_exists(RYTsource, ryt['id'], year, tech['TechId']):
+                        chunk[year] = RYTsource[ryt['id']][year][tech['TechId']]
+                    else:
+                        chunk[year] = 0  
+                RYTdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTdata, OsemosysModel.rytPath)
+    except(IOError):
+        raise IOError
+
+def default_RYTs(genData, RYTspath):
+    try:
+        years = genData['osy-years']
+        seasons = int(genData['osy-ns'])
+        days = int(genData['osy-dt'])
+        
+        RYTsdata = {}
+        for ryt in Config.PARAMETERS['RYTs']:
+            RYTsdata[ryt['id']] = []
+            for season in range(seasons):
+                for day in range(days):
+                    chunk = {}
+                    s = str(season + 1)
+                    d = str(day + 1)
+                    chunk['YearSplit'] = "S"+s+d
+                    for year in years:
+                        chunk[year] = 0  
+                    RYTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTsdata, RYTspath)
+    except(IOError):
+        raise IOError
+
+def updateRYTsmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        rytsJson = OsemosysModel.getJsonData('RYTs.json')
+        RYTssource = OsemosysModel.RYTs(rytsJson)
+        years = genData['osy-years']
+
+        seasons = int(genData['osy-ns'])
+        days = int(genData['osy-dt'])
+        
+        RYTsdata = {}
+        for ryt in Config.PARAMETERS['RYTs']:
+            RYTsdata[ryt['id']] = []
+            for season in range(seasons):
+                for day in range(days):
+                    chunk = {}
+                    s = str(season + 1)
+                    d = str(day + 1)
+                    chunk['YearSplit'] = "S"+s+d
+                    for year in years:
+                        if keys_exists(RYTssource, year, "S"+s+d):
+                            chunk[year] = RYTssource[year]["S"+s+d]
+                        else:
+                            chunk[year] = 0  
+                    RYTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTsdata, OsemosysModel.rytsPath)
+    except(IOError):
+        raise IOError
+
+def default_RYTC(genData, RYTCpath):
+    try:
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTCdata = {}
+        for ryt in Config.PARAMETERS['RYTC']:
+            RYTCdata[ryt['id']] = []
+            for tech in techs:
+                if tech[ryt['id']]:
+                    for comm in tech[ryt['id']]:
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        chunk['CommId'] = comm
+                        for year in years:
+                            chunk[year] = 0  
+                        RYTCdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTCdata, RYTCpath)
+    except(IOError):
+        raise IOError
+
+def updateRYTCmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        rytcJson = OsemosysModel.getJsonData('RYTC.json')
+        RYTCsource = OsemosysModel.RYTC(rytcJson)
+
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTCdata = {}
+        for ryt in Config.PARAMETERS['RYTC']:
+            RYTCdata[ryt['id']] = []
+            for tech in techs:
+                if tech[ryt['id']]:
+                    for comm in tech[ryt['id']]:
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        chunk['CommId'] = comm
+                        for year in years:
+                            # if RYTCsource[ryt['id']][year][tech['TechId']][comm]:
+                            if keys_exists(RYTCsource, ryt['id'], year, tech['TechId'], comm):
+                                chunk[year] = RYTCsource[ryt['id']][year][tech['TechId']][comm]
+                            else:
+                                chunk[year] = 0 
+                        RYTCdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTCdata, OsemosysModel.rytcPath)
+
+    except(IOError):
+        raise IOError
+
+def default_RYTE(genData, RYTEpath):
+    try:
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTEdata = {}
+        for ryt in Config.PARAMETERS['RYTE']:
+            RYTEdata[ryt['id']] = []
+            for tech in techs:
+                if tech[ryt['id']]:
+                    for comm in tech[ryt['id']]:
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        chunk['EmisId'] = comm
+                        for year in years:
+                            chunk[year] = 0  
+                        RYTEdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTEdata, RYTEpath)
+    except(IOError):
+        raise IOError
+
+def updateRYTEmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        ryteJson = OsemosysModel.getJsonData('RYTE.json')
+        RYTEsource = OsemosysModel.RYTE(ryteJson)
+
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        
+        RYTEdata = {}
+        for ryt in Config.PARAMETERS['RYTE']:
+            RYTEdata[ryt['id']] = []
+            for tech in techs:
+                if tech[ryt['id']]:
+                    for comm in tech[ryt['id']]:
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        chunk['EmisId'] = comm
+                        for year in years:
+                            # if RYTCsource[ryt['id']][year][tech['TechId']][comm]:
+                            if keys_exists(RYTEsource, ryt['id'], year, tech['TechId'], comm):
+                                chunk[year] = RYTEsource[ryt['id']][year][tech['TechId']][comm]
+                            else:
+                                chunk[year] = 0 
+                        RYTEdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTEdata, OsemosysModel.rytePath)
+
+    except(IOError):
+        raise IOError
+
+def default_RYC(genData, RYTpath):
+    try:
+        years = genData['osy-years']
+        comms = genData['osy-comm']
+        
+        RYCdata = {}
+        for ryt in Config.PARAMETERS['RYC']:
+            RYCdata[ryt['id']] = []
+            for comm in comms:
+                chunk = {}
+                chunk['CommId'] = comm['CommId']
+                for year in years:
+                    chunk[year] = 0  
+                RYCdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYCdata, RYTpath)
+    except(IOError):
+        raise IOError
+
+def updateRYCmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        rycJson = OsemosysModel.getJsonData('RYC.json')
+        RYCsource = OsemosysModel.RYC(rycJson)
+        years = genData['osy-years']
+        comms = genData['osy-comm']
+        
+        RYCdata = {}
+        for ryt in Config.PARAMETERS['RYC']:
+            RYCdata[ryt['id']] = []
+            for comm in comms:
+                chunk = {}
+                chunk['CommId'] = comm['CommId']
+                for year in years:
+                    if keys_exists(RYCsource, ryt['id'], year, comm['CommId']):
+                        chunk[year] = RYCsource[ryt['id']][year][comm['CommId']]
+                    else:
+                        chunk[year] = 0  
+                RYCdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYCdata, OsemosysModel.rycPath)
+    except(IOError):
+        raise IOError
+    
+def default_RYE(genData, RYEpath):
+    try:
+        years = genData['osy-years']
+        emis = genData['osy-emis']
+        
+        RYEdata = {}
+        for ryt in Config.PARAMETERS['RYE']:
+            RYEdata[ryt['id']] = []
+            for emi in emis:
+                chunk = {}
+                chunk['EmisId'] = emi['EmisId']
+                for year in years:
+                    chunk[year] = 0  
+                RYEdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYEdata, RYEpath)
+    except(IOError):
+        raise IOError
+
+def updateRYEmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        ryeJson = OsemosysModel.getJsonData('RYE.json')
+        RYEsource = OsemosysModel.RYE(ryeJson)
+        years = genData['osy-years']
+        emis = genData['osy-emis']
+        
+        RYEdata = {}
+        for ryt in Config.PARAMETERS['RYE']:
+            RYEdata[ryt['id']] = []
+            for emi in emis:
+                chunk = {}
+                chunk['EmisId'] = emi['EmisId']
+                for year in years:
+                    if keys_exists(RYEsource, ryt['id'], year, emi['EmisId']):
+                        chunk[year] = RYEsource[ryt['id']][year][emi['EmisId']]
+                    else:
+                        chunk[year] = 0  
+                RYEdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYEdata, OsemosysModel.ryePath)
+    except(IOError):
+        raise IOError
+
+def default_RYTTs(genData, RYTTspath):
+    try:
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        ns = int(genData['osy-ns'])
+        nd = int(genData['osy-dt'])
+        
+        RYTTsdata = {}
+        for ryt in Config.PARAMETERS['RYTTs']:
+            RYTTsdata[ryt['id']] = []
+            for tech in techs:
+                for season in range(ns):
+                    for day in range(nd):
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        s = str(season + 1)
+                        d = str(day + 1)
+                        chunk['Timeslice'] = "S"+s+d
+                        for year in years:
+                            chunk[year] = 0  
+                        RYTTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTTsdata, RYTTspath)
+    except(IOError):
+        raise IOError
+
+def updateRYTTsmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        ryttsJson = OsemosysModel.getJsonData('RYTTs.json')
+        RYTTssource = OsemosysModel.RYTTs(ryttsJson)
+
+        years = genData['osy-years']
+        techs = genData['osy-tech']
+        ns = int(genData['osy-ns'])
+        nd = int(genData['osy-dt'])
+
+        RYTTsdata = {}
+        for ryt in Config.PARAMETERS['RYTTs']:
+            RYTTsdata[ryt['id']] = []
+            for tech in techs:
+                for season in range(ns):
+                    for day in range(nd):
+                        chunk = {}
+                        chunk['TechId'] = tech['TechId']
+                        s = str(season + 1)
+                        d = str(day + 1)
+                        chunk['Timeslice'] = "S"+s+d
+                        for year in years:
+                            if keys_exists(RYTTssource, ryt['id'], year, tech['TechId'], "S"+s+d):
+                                chunk[year] = RYTTssource[ryt['id']][year][tech['TechId']]["S"+s+d]
+                            else:
+                                chunk[year] = 0  
+                        RYTTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYTTsdata, OsemosysModel.ryttsPath)
+    except(IOError):
+        raise IOError
+
+def default_RYCTs(genData, RYCTspath):
+    try:
+        years = genData['osy-years']
+        comms = genData['osy-comm']
+        ns = int(genData['osy-ns'])
+        nd = int(genData['osy-dt'])
+        
+        RYCTsdata = {}
+        for ryt in Config.PARAMETERS['RYCTs']:
+            RYCTsdata[ryt['id']] = []
+            for comm in comms:
+                for season in range(ns):
+                    for day in range(nd):
+                        chunk = {}
+                        chunk['CommId'] = comm['CommId']
+                        s = str(season + 1)
+                        d = str(day + 1)
+                        chunk['Timeslice'] = "S"+s+d
+                        for year in years:
+                            chunk[year] = 0  
+                        RYCTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYCTsdata, RYCTspath)
+    except(IOError):
+        raise IOError
+
+def updateRYCTsmodel(case, genData):
+    try:
+        OsemosysModel = OsemosysCase(case)
+        ryctsJson = OsemosysModel.getJsonData('RYCTs.json')
+        RYCTssource = OsemosysModel.RYCTs(ryctsJson)
+
+        years = genData['osy-years']
+        comms = genData['osy-comm']
+        ns = int(genData['osy-ns'])
+        nd = int(genData['osy-dt'])
+
+        RYCTsdata = {}
+        for ryt in Config.PARAMETERS['RYCTs']:
+            RYCTsdata[ryt['id']] = []
+            for comm in comms:
+                for season in range(ns):
+                    for day in range(nd):
+                        chunk = {}
+                        chunk['CommId'] = comm['CommId']
+                        s = str(season + 1)
+                        d = str(day + 1)
+                        chunk['Timeslice'] = "S"+s+d
+                        for year in years:
+                            if keys_exists(RYCTssource, ryt['id'], year, comm['CommId'], "S"+s+d):
+                                chunk[year] = RYCTssource[ryt['id']][year][comm['CommId']]["S"+s+d]
+                            else:
+                                chunk[year] = 0  
+                        RYCTsdata[ryt['id']].append(chunk)
+
+        File.writeFile( RYCTsdata, OsemosysModel.ryctsPath)
+    except(IOError):
+        raise IOError

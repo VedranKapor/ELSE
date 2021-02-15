@@ -106,11 +106,11 @@ export class Html {
     }
 
     static title(casename){
-        $("#else-case").html(casename);
+        $("#osy-case").html(casename);
     }
 
     static genData(model){
-        var container =  $('#else-currency');
+        var container =  $('#osy-currency');
         container.empty();
         $.each(CURRENCY, function (key, value) {
             if (value == model.currency){
@@ -120,20 +120,38 @@ export class Html {
             }
         });
 
-        var container =  $('#else-unit');
-        container.empty();
-        $.each(UNITS, function (key, value) {
-            if (value == model.unit){
-                container.append('<option value="'+ value+'" selected>'+value+'</option>');
-            }else{
-                container.append('<option value="'+ value+'">'+value+'</option>');
-            }
-        });
+        // var container =  $('#osy-unit');
+        // container.empty();
+        // $.each(UNITS, function (key, value) {
+        //     if (value == model.unit){
+        //         container.append('<option value="'+ value+'" selected>'+value+'</option>');
+        //     }else{
+        //         container.append('<option value="'+ value+'">'+value+'</option>');
+        //     }
+        // });
 
-        $("#else-date").datepicker().datepicker("setDate", model.date);
-        $("#else-casename").val(model.casename);
-        $("#else-desc").val(model.desc);
-        $("#else-dr").val(model.dr);
+        // var container =  $('#osy-unit');
+        // container.empty();
+        // $.each(UNITS, function (key, value) {
+        //     if (value.id == model.unit){
+        //         container.append('<option value="'+ value.id+'" selected>'+value.id+'</option>');
+        //     }else{
+        //         container.append('<option value="'+ value.id+'">'+value.id+'</option>');
+        //     }
+        // });
+
+        $("#osy-date").datepicker().datepicker("setDate", model.date);
+        $("#osy-casename").val(model.casename);
+        $("#osy-desc").val(model.desc);
+        $("#osy-dr").val(model.dr);
+        $("#osy-dm").val(model.dm);
+        $("#osy-ns").val(model.ns);
+        $("#osy-dt").val(model.dt);
+
+        $("#commCount").text(model.commCount);
+        $("#techCount").text(model.techCount);
+        $("#emisCount").text(model.emisCount);
+
     }
 
     static ddlyears(years, year){
@@ -148,8 +166,44 @@ export class Html {
         });
     }
 
+    static ddlRYT(ryts, ryt){
+        var container =  $('#osy-ryt');
+        container.empty();
+        $.each(ryts, function (id, obj) {
+            if (obj.id == ryt ){
+                container.append('<option value="'+ obj.id+'" selected>'+obj.value+'</option>');
+            }else{
+                container.append('<option value="'+ obj.id+'">'+obj.value+'</option>');
+            }
+        });
+    }
+
+    static ddlTechs(techs, tech){
+        var container =  $('#osy-techs');
+        container.empty();
+        $.each(techs, function (id, obj) {
+            if (obj.id == tech ){
+                container.append('<option value="'+ obj.TechId+'" selected>'+obj.Tech+'</option>');
+            }else{
+                container.append('<option value="'+ obj.TechId+'" >'+obj.Tech+'</option>');
+            }
+        });   
+    }
+
+    static ddlComms(comms, comm){
+        var container =  $('#osy-comms');
+        container.empty();
+        $.each(comms, function (id, obj) {
+            if (obj.id == comm ){
+                container.append('<option value="'+ obj.CommId+'" selected>'+obj.Comm+'</option>');
+            }else{
+                container.append('<option value="'+ obj.CommId+'" >'+obj.Comm+'</option>');
+            }
+        });   
+    }
+
     static years(from, to, range){
-        var container =  $('#else-years');
+        var container =  $('#osy-years');
         container.empty();
         for(var i = from; i <= to; i++) {
             if (range.indexOf(String(i)) != -1) {

@@ -1,4 +1,6 @@
-from flask import Flask, jsonify, request, session, render_template
+#import sys
+import os
+from flask import Flask, jsonify, request, session, render_template, make_response
 from flask_cors import CORS
 from pathlib import Path
 from datetime import timedelta
@@ -9,13 +11,24 @@ from Routes.Case.CaseRoute import case_api
 from Routes.Calculation.CalculationRoute import calc_api
 
 
+
 # template_dir = os.path.abspath('WebAPP')
 # static_dir = os.path.abspath('WebAPP')
-#gets absolute path
-template_dir = Path('WebAPP').resolve()
-static_dir = Path('WebAPP').resolve()
 
-app = Flask(__name__, static_url_path='',static_folder=static_dir,  template_folder=template_dir)
+template_dir = os.path.abspath('WebAPP')
+static_dir = os.path.abspath('WebAPP')
+
+
+# template_dir = os.path.join(sys._MEIPASS, 'WebAPP') 
+# static_dir = os.path.join(sys._MEIPASS, 'WebAPP') 
+#gets absolute path
+# template_dir = Path('WebAPP').resolve()
+# static_dir = Path('../WebAPP').resolve()
+#template_dir = 'WebAPP'
+#static_dir = '../WebAPP'
+
+
+app = Flask(__name__, static_url_path='', static_folder=static_dir,  template_folder=template_dir)
 
 app.permanent_session_lifetime = timedelta(days=5)
 app.config['SECRET_KEY'] = '12345'
@@ -32,7 +45,8 @@ CORS(app)
 def add_headers(response):
     response.headers.add('Access-Control-Allow-Origin', 'http://127.0.0.1')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    #response.headers['Content-Type'] = 'application/javascript'
     return response
 
 # @app.errorhandler(CustomException)
@@ -46,11 +60,12 @@ def add_headers(response):
 def home():
     return render_template('index.html')
 
+
 @app.route("/getSession", methods=['GET'])
 def getSession():
     try:
         response = {
-            "session": session.get('elsecase', None)
+            "session": session.get('osycase', None)
         }
         return jsonify(response), 200
     except( KeyError ):
@@ -61,12 +76,16 @@ def setSession():
     try:
         cs = request.json['case']
         #session.permanent= True
-        session['elsecase'] = cs
-        response = {"elsecase": session['elsecase']}
+        session['osycase'] = cs
+        response = {"osycase": session['osycase']}
         return jsonify(response), 200
     except( KeyError ):
         return jsonify('No selected parameters!'), 404
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    #potrebno radi module js importa u index.html ES6 modules
+    #Flask.__version__
+    import mimetypes
+    mimetypes.add_type('application/javascript', '.js')
+    app.run(host='127.0.0.1', port=5000)
